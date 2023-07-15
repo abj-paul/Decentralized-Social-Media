@@ -1,0 +1,28 @@
+* About 
+The social media has been overtaken by propietary companies, feeding off the contents people create. The amount of improvement societies could see by leveraging this huge quantity of data through research and local initiatives is immense. So in this project, we build a decentralized social media site for the people, of the people. 
+
+* Installation 
+
+#+begin_src bash
+# Starting the frontend 
+cd frontend/app/src 
+npm install 
+ng serve --open 
+
+# Starting the backend 
+npm install 
+npm start 
+#+end_src
+
+* Issues 
+If you encounter any bug, feel free to raise an issue. Pull Requests are welcomed. 
+
+* Features 
+- [ ] Authentication & Authorization
+- [ ] Frontend 
+- [ ] Post content 
+- [ ] Post image content 
+- [ ] Load timeline
+- [ ] Decentralized censorship
+- [ ] Decentralized content filtering 
+- [ ] Decentralized Recommendation
