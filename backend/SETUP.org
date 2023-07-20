@@ -1,0 +1,22 @@
+* Create database
+** Create User
+
+** Create Database
+#+begin_src bash
+  mysql -u abhidb -p
+  CREATE DATABASE DeSo
+#+end_src
+* Plan
+- [X] Create users
+- [X] Create databases
+- [ ] JWT Authentication
+- [ ] Create endpoint for login/registration
+- [ ] minio
+- [ ] Create endpoint for posting
+- [ ] Create endpoint for timeline
+
+** Tables
+posts(postId, postContent, contentType)
+users(userid, username, password, facial recognition)
+notification(notificationId, notificationMessage, clicked/unclicked, postId)
+minio(object, objectLink)
