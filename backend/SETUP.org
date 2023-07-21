@@ -6,11 +6,135 @@
   mysql -u abhidb -p
   CREATE DATABASE DeSo
 #+end_src
+* Install & Setup Minio
+Install minio following this [[https://linuxhint.com/installing_minio_ubuntu/][Guide.]] Installation is easy. It consists of two phase only.
+1. Download the server file ~minio~.
+2. Run the server with ~sudo ./minio server /minio~.
+
+Done! minio server is running. The server is running at port 9000 by default. So check that out in your browser by entering the address ~http://192.168.0.106:9000~. Enter the username and password. The default is ~minioadmin~.
+
+
+Now you need to create api key to use the api that minio server provides. So in the GUI opened, click on "Access Keys" and create an access key from there. Save the api access key and secret key, which is basically your password. You will need to use those to use the api.
+
+Great! Now you can simply use the following code to test out your minio in javascript/nodejs!
+
+** ChatGPT Generated Code
+To use MinIO to store images in a Node.js application, you need to follow these steps:
+
+1. Install MinIO Server
+2. Set up MinIO Client (MinIO SDK for Node.js)
+3. Create an HTML form to upload images
+4. Implement the Node.js server to handle image upload and storage
+
+Let's go through each step:
+
+*** Step 1: Install MinIO Server
+MinIO is an object storage server, and you can set it up locally for development purposes. You can download the MinIO binary from the official website (https://min.io/download) or use a package manager like Homebrew (for macOS) or apt (for Linux). Follow the MinIO documentation to start and configure the MinIO server.
+
+*** Step 2: Set up MinIO Client (MinIO SDK for Node.js)
+You'll need the MinIO SDK for Node.js to interact with the MinIO server from your Node.js application. You can install it using npm:
+
+#+begin_src  bash
+npm install minio
+#+end_src
+
+*** Step 3: Create an HTML form to upload images
+
+Create an HTML file named `index.html` with a form that allows users to upload images. Here's a simple example:
+
+#+begin_src html
+  <!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+</head>
+<body>
+    <h2>Image Upload</h2>
+    <form action="http://localhost:3000/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
+
+#+end_src
+
+
+*** Step 4: Implement the Node.js server to handle image upload and storage
+Create a Node.js file (e.g., `app.js`) to implement the server-side logic.
+
+#+begin_src bash
+npm init -y
+npm install express multer minio
+#+end_src
+
+Now, let's write the Node.js code (`app.js`) to handle the image upload and store it on the MinIO server:
+
+#+begin_src javascript
+const express = require('express');
+const multer = require('multer');
+const Minio = require('minio');
+
+const app = express();
+const port = 3000;
+
+// Set up MinIO client
+const minioClient = new Minio.Client({
+  endPoint: 'your-minio-server-address',
+  port: 9000,
+  useSSL: false,
+  accessKey: 'your-access-key',
+  secretKey: 'your-secret-key',
+});
+
+// Multer middleware to handle the file upload
+const upload = multer({ dest: 'uploads/' });
+
+// Serve the HTML file with the image upload form
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+// Handle the image upload and store it on MinIO
+app.post('/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No image file found.');
+  }
+
+  const filePath = req.file.path;
+  const metaData = {
+    'Content-Type': req.file.mimetype,
+  };
+
+  const bucketName = 'your-bucket-name'; // Replace with your desired bucket name
+  const objectName = req.file.originalname;
+
+  minioClient.fPutObject(bucketName, objectName, filePath, metaData, (err, etag) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error uploading the image.');
+    }
+
+    console.log('Image uploaded successfully: ' + objectName);
+    return res.status(200).send('Image uploaded successfully.');
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+#+end_src
+In the above code, make sure to replace the placeholders (`your-minio-server-address`, `your-access-key`, `your-secret-key`, and `your-bucket-name`) with your actual MinIO server information.
+
+Now, when you run `node app.js`, the server will start on `http://localhost:3000`. When you visit this URL in your browser, you'll see the image upload form. Choose an image file and click "Upload." The Node.js server will handle the upload, store the image on MinIO, and print a success message.
+
+Please note that this is just a basic example to get you started. In a real application, you may want to add more error handling, security measures, and handle user authentication for accessing and uploading images.
+
 * Plan
 - [X] Create users
 - [X] Create databases
-- [ ] JWT Authentication
-- [ ] Create endpoint for login/registration
+- [X] JWT Authentication
+- [X] Create endpoint for login/registration
 - [ ] minio
 - [ ] Create endpoint for posting
 - [ ] Create endpoint for timeline
