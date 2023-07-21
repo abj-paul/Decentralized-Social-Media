@@ -137,9 +137,12 @@ Please note that this is just a basic example to get you started. In a real appl
 - [X] Create databases
 - [X] JWT Authentication
 - [X] Create endpoint for login/registration
-- [ ] minio
+- [X] minio
+- [ ] Save image info in mysql
+- [ ] Send image to angular
 - [ ] Create endpoint for posting
 - [ ] Create endpoint for timeline
+- [ ] Frontend load & show.
 
 ** Tables
 posts(postId, postContent, contentType)
