@@ -4,14 +4,25 @@ The social media has been overtaken by propietary companies, feeding off the con
 * Installation 
 
 #+begin_src bash
-# Starting the frontend 
-cd frontend/app/src 
-npm install 
-ng serve --open 
+  # Starting the frontend 
+  cd frontend/app/src 
+  npm install 
+  ng serve --open 
 
-# Starting the backend 
-npm install 
-npm start 
+  # Start Servers
+  sudo apt install mysql
+  sudo systemctl start mysql
+
+  wget https://dl.minio.io/server/minio/release/linux-amd64/minio
+  chmod +x minio
+  sudo ./minio server /minio
+
+  # Create Tables
+  # Follow guides in Setup.org in backend folder
+
+  # Starting the backend 
+  npm install 
+  npm start 
 #+end_src
 
 * Issues 
