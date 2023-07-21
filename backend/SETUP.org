@@ -16,6 +16,8 @@ Done! minio server is running. The server is running at port 9000 by default. So
 
 Now you need to create api key to use the api that minio server provides. So in the GUI opened, click on "Access Keys" and create an access key from there. Save the api access key and secret key, which is basically your password. You will need to use those to use the api.
 
+Now create a bucket. Bucket is basically like a folder or table. You put your image objects in the bucket. 
+
 Great! Now you can simply use the following code to test out your minio in javascript/nodejs!
 
 ** ChatGPT Generated Code
