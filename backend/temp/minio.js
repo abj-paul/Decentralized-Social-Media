@@ -50,7 +50,6 @@ app.post('/upload', upload.single('image'), (req, res) => {
     // Save the image name and object name association in the array
     uploadedImages.push({ imageName, objectName });
 
-    console.log(uploadedImages);
     return res.status(200).send('Image uploaded successfully.');
   });
 });
