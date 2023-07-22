@@ -20,10 +20,9 @@ export class LoginComponent {
     }).subscribe((response)=>{
       this.loginStatus = response["message"];
       localStorage.setItem("token",response["token"]);
-      console.log(response["token"]);
       localStorage.setItem("userId", response["userId"]);
+      localStorage.setItem("username", response["username"]);
       console.log(response);
-      console.log(localStorage.getItem("userId"));
 
       this.router.navigate(["/timeline"]);
     })

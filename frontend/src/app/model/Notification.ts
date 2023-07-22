@@ -1,5 +1,5 @@
 export class Notification {
-    notificationTitle : string = "";
+    notificationMessage : string = "";
     notificationId : number = 0;
     username : string = "";
     postId : number = 0;

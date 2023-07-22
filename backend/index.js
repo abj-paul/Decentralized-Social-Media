@@ -163,6 +163,25 @@ function getFirstSentence(textContent) {
 }
 
 
+app.get('/api/v1/user/notification', (req, response) => {
+    const userId = req.query.userId;
+
+    DatabaseService.executeQuery('SELECT A.notificationId,B.postId,C.username, A.notificationMessage FROM notification A, posts B , users C WHERE A.postId = B.postId and B.userId=C.userId and A.pClicked=0 and C.userId='+userId)
+	.then((notifications)=>{
+	    response.status(200).send({"notifications":notifications});
+	})
+});
+
+app.delete('/api/v1/user/notification', (req, response) => {
+    const notificationId = req.query.notificationId;
+
+    DatabaseService.executeQuery('DELETE FROM notification WHERE notificationId='+notificationId)
+	.then((notifications)=>{
+	    response.status(200).send({"notifications":notifications});
+	})
+});
+
+
 app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {
     console.log("Reached this api");
   if (!req.file) {
