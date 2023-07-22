@@ -9,7 +9,7 @@
         <pre>
             {{post.username}}
             {{post.textContent}}
-            {{post.imageContent}}
+            <img [src]="'http://localhost:3000/api/v1/images/'+post.imageContent" class="postImage">
         </pre>
     </div>
 </div>

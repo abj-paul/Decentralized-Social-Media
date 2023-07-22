@@ -20,6 +20,7 @@ export class TimelineComponent implements OnInit{
     this.http.get<any>(`http://localhost:3000/api/v1/user/post/get?userId=${userId}`, {headers}) //
     .subscribe((response)=>{
       this.posts = response.posts;
+      console.log(this.posts);
     });
   }
 }
