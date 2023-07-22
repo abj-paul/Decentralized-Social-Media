@@ -1,1 +1,13 @@
-<p>login works!</p>
+<div class="container">
+    <p>Registration</p>
+    <div class="form-group">
+        <input type="text" name="username" placeholder="Enter username" [(ngModel)]="username" class="form-control">
+    </div>
+    <div class="form-group">
+        <input type="password" name="password" placeholder="Enter password" [(ngModel)]="password" class="form-control">
+    </div>
+    <div class="form-group">
+        <button (click)="authenticate()">Register!</button>
+        <span>{{loginStatus}}</span>
+    </div>
+</div>

@@ -6,3 +6,12 @@
     margin-bottom: 10px;
     border-bottom: 2px groove black;
 }
+.createPost {
+    pad: 10px;
+    background-color: rgb(218, 206, 206);
+    width: 50%;
+    height: 50px;
+    margin: auto;
+    margin-bottom: 30px;
+    text-align: center;
+}

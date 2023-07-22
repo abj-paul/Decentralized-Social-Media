@@ -29,8 +29,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 const upload = multer({ dest: 'uploads/' });
-//app.use('/api/v1/images', authorize);
-//app.use('/api/v1/user', authorize);
+app.use('/api/v1/images', authorize);
+app.use('/api/v1/user', authorize);
 
 
 
@@ -43,23 +43,52 @@ app.get('/api/v1/', (req,res)=>{
 app.post('/api/v1/authentication/register', (req, res) => {
     const { username, password, description } = req.body;
 
-  if (users.some(user => user.username === username)) {
-    return res.status(409).json({ message: 'User already exists' });
-  }
-
-    bcrypt.genSalt(10, (err, salt) => {
-      if (err) return res.status(500).json({ message: 'Error during password hashing' });
-
-      bcrypt.hash(password, salt, (err, hash) => {
-	  if (err) return res.status(500).json({ message: 'Error during password hashing' });
-	  users.push({ id: users.length + 1, username, password: hash });
-	  DatabaseService.executeQuery(
-	      `INSERT INTO users(username, password, user_description) VALUES ('${username}', '${hash}', '${description}');`
-	  );
-	  return res.status(201).json({ message: 'User registered successfully' });
-      });
-  });
+    DatabaseService.executeQuery('SELECT * FROM users')
+	.then((users)=>{
+	    if (users.some(user => user.username === username)) {
+		return res.status(409).json({ message: 'User already exists' });
+	    }
+	    
+	    bcrypt.genSalt(10, (err, salt) => {
+		if (err) return res.status(500).json({ message: 'Error during password hashing' });
+		
+		bcrypt.hash(password, salt, (err, hash) => {
+		    if (err) return res.status(500).json({ message: 'Error during password hashing' });
+		    users.push({ id: users.length + 1, username, password: hash });
+		    DatabaseService.executeQuery(
+			`INSERT INTO users(username, password, user_description) VALUES ('${username}', '${hash}', '${description}');`
+		    );
+		    return res.status(201).json({ message: 'User registered successfully' });
+		});
+	    });
+	})
 });
+
+app.post('/api/v1/authentication/login', (req, res) => {
+    const { username, password } = req.body;
+
+    DatabaseService.executeQuery(`SELECT * FROM users`)
+	.then((users)=>{
+	    const user = users.find(user => user.username === username);
+	    
+	    if (!user) {
+		return res.status(401).json({ message: 'Authentication failed' });
+	    }
+
+	    bcrypt.compare(password, user.password, (err, result) => {
+		console.log(result);
+		if (err || !result) {
+		    return res.status(401).json({ message: 'Authentication failed' });
+		}
+		
+		const token = jwt.sign({ userId: user.id, username: user.username }, 'mySecretKeyIsYou<3', { expiresIn: '1h' });
+		console.log("Logging in.... "+token);
+		return res.json({ message: 'Authentication successful',  "userId" : user["userid"], "username" : user["username"], "description" : user["description"], token  });
+	    });
+	    
+	});
+    });
+
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -72,7 +101,12 @@ function shuffleArray(array) {
 app.get('/api/v1/user/post/get', (req, response) => {
     const userId = req.query.userId;
     console.log(userId);
-    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.userId='+userId)
+
+    if (!userId) {
+	return response.status(400).json({ message: 'userId is required' });
+    }
+    
+    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and users.userId!='+userId)
 	.then((result)=>{
 	    const posts = shuffleArray(result);
 	    response.status(200).send({"posts":posts});
@@ -82,7 +116,9 @@ app.get('/api/v1/user/post/get', (req, response) => {
 app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) => {
     const textContent = req.body.textContent;
     const imageContent = req.file;
-    const userId = 1; // TODO
+    const userId = req.body.userId;
+
+    console.log(req.body);
 
     if (!req.file) {
 	return res.status(400).send('No image file found.');
@@ -125,45 +161,6 @@ function getFirstSentence(textContent) {
 
   return firstSentence;
 }
-
-app.post('/api/v1/authentication/login', (req, res) => {
-    const { username, password } = req.body;
-
-    DatabaseService.executeQuery(`SELECT * FROM users`)
-	.then((users)=>{
-	    const user = users.find(user => user.username === username);
-	    
-	    if (!user) {
-		return res.status(401).json({ message: 'Authentication failed' });
-	    }
-
-	    bcrypt.compare(password, user.password, (err, result) => {
-		console.log(result);
-		if (err || !result) {
-		    return res.status(401).json({ message: 'Authentication failed' });
-		}
-		
-		const token = jwt.sign({ userId: user.id, username: user.username }, 'your-secret-key', { expiresIn: '1h' });
-		return res.json({ message: 'Authentication successful', token });
-	    });
-	    
-	});
-    });
-
-app.get('/api/v1/user/timeline', (req, res) => {
-    const token = req.headers.authorization;
-
-    if (!token) {
-	return res.status(401).json({ message: 'Token not provided' });
-    }
-
-    jwt.verify(token, 'your-secret-key', (err, decoded) => {
-	if (err) {
-	    return res.status(401).json({ message: 'Invalid token' });
-	}
-	return res.json({ message: 'Protected data accessed successfully', user: decoded });
-  });
-});
 
 
 app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {

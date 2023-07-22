@@ -1,5 +1,9 @@
 <p>Timeline</p>
 
+<div class="createPost">
+    <a [routerLink]="['/post']">Create Post</a>
+</div>
+
 <div class="container" *ngFor="let post of posts">
     <div class="post">
         <pre>

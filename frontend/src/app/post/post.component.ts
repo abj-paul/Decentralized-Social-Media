@@ -20,9 +20,13 @@ export class PostComponent {
     console.log(this.textContent);
     console.log(this.imageContent);
 
+    let userId = localStorage.getItem("userId");
+    if(!userId) userId = '1';
+
     const form = new FormData();
     form.append("textContent", this.textContent);
     form.append("imageContent", this.imageContent, this.imageContent.name);
+    form.append("userId", userId);
 
     this.http.post<any>("http://localhost:3000/api/v1/user/post/upload", form)
     .subscribe((res)=>{
