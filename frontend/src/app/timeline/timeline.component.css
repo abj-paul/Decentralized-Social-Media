@@ -1,0 +1,8 @@
+.post {
+    padding: 20px;
+    background-color: bisque;
+    margin: auto;
+    width: 50%;
+    margin-bottom: 10px;
+    border-bottom: 2px groove black;
+}

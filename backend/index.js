@@ -1,10 +1,15 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
+const cors = require('cors');
 const Minio = require('minio');
 const DatabaseService = require("./DatabaseService.js");
 const authorize = require('./authorizationMiddleware.js');
+const FormData = require('form-data');
+const axios = require('axios');
+
 
 // Constants
 const PORT = 3000;
@@ -22,9 +27,10 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 const upload = multer({ dest: 'uploads/' });
-app.use('/api/v1/images', authorize);
-app.use('/api/v1/user', authorize);
+//app.use('/api/v1/images', authorize);
+//app.use('/api/v1/user', authorize);
 
 
 
@@ -54,6 +60,71 @@ app.post('/api/v1/authentication/register', (req, res) => {
       });
   });
 });
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+app.get('/api/v1/user/post/get', (req, response) => {
+    const userId = req.query.userId;
+    console.log(userId);
+    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.userId='+userId)
+	.then((result)=>{
+	    const posts = shuffleArray(result);
+	    response.status(200).send({"posts":posts});
+	});
+});
+
+app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) => {
+    const textContent = req.body.textContent;
+    const imageContent = req.file;
+    const userId = 1; // TODO
+
+    if (!req.file) {
+	return res.status(400).send('No image file found.');
+    }
+
+    const filePath = req.file.path;
+    const metaData = {
+	'Content-Type': req.file.mimetype,
+    };
+
+    const bucketName = 'posts'; // Replace with your desired bucket name
+    const objectName = req.file.originalname;
+    const imageName = req.file.originalname; // Save the image name
+
+    minioClient.fPutObject(bucketName, objectName, filePath, metaData, (err, etag) => {
+	if (err) {
+	    console.log(err);
+	    return res.status(500).send('Error uploading the image.');
+	}
+	
+	console.log('Image uploaded successfully: ' + objectName);
+	
+	// Save the image name and object name association in the array
+	uploadedImages.push({ imageName, objectName });
+	console.log(uploadedImages);
+	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${objectName}');`)
+	    .then((respond)=>{
+		console.log(respond.insertId);
+		DatabaseService.executeQuery(`INSERT INTO notification(postId, notificationMessage, pClicked) VALUES(${respond.insertId}, '${getFirstSentence(textContent)}', 0);`)
+		    .then((a)=>{
+			return res.status(200).send('Image uploaded successfully.');
+		    })
+	    });
+    });
+});
+function getFirstSentence(textContent) {
+  const sentenceEndRegex = /[.!?]/;
+  const sentencesArray = textContent.split(sentenceEndRegex);
+  const firstSentence = sentencesArray[0].trim();
+
+  return firstSentence;
+}
 
 app.post('/api/v1/authentication/login', (req, res) => {
     const { username, password } = req.body;
@@ -96,6 +167,7 @@ app.get('/api/v1/user/timeline', (req, res) => {
 
 
 app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {
+    console.log("Reached this api");
   if (!req.file) {
     return res.status(400).send('No image file found.');
   }

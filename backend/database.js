@@ -15,8 +15,8 @@ const post_table_creation_query = `
 CREATE TABLE IF NOT EXISTS posts(
     postId INT auto_increment primary key,
     userId INT,
-    postContent varchar(500) NOT NULL,
-    contentType varchar(10) NOT NULL,
+    textContent varchar(500) NOT NULL,
+    imageContent varchar(100) NOT NULL,
     CONSTRAINT fk_post_user_userId FOREIGN KEY(userId) REFERENCES users(userid) ON DELETE CASCADE);
 `;
 const notification_table_creation_query = `
