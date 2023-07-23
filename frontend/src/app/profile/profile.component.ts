@@ -22,11 +22,18 @@ export class ProfileComponent implements OnInit{
     });
   }
 
-  removeNotification(notificationId:number):void {
-    this.http.delete("http://localhost:3000/api/v1/user/notification?notificationId="+notificationId)
+  removeNotification(userId:number, postId:number):void {
+    this.http.patch('http://localhost:3000/api/v1/user/notification', {
+      "userId" : userId,
+      "postId" : postId
+    })
     .subscribe((response)=>{
-      this.notifications.splice(notificationId, 1);
-      console.log(this.notifications);
+      let newNotifications : Notification[] = [];
+      this.notifications.forEach((element)=>{
+        if((element.postId==postId && element.userId==userId)==false)
+          newNotifications.push(element);
+      });
+      this.notifications = newNotifications;
     })
   }
 }

@@ -11,8 +11,12 @@
           <tr *ngFor="let notification of notifications">
             <td>{{notification.username}}</td>
             <td>{{notification.notificationMessage}}</td>
-            <td><button (click)="removeNotification(notification.notificationId)">Remove</button></td>
+            <td><button (click)="removeNotification(notification.userId, notification.postId)">Remove</button></td>
           </tr>
         </tbody>
     </table>
+</div>
+
+<div class="logout">
+  <a [routerLink]="['/home']">Logout</a>
 </div>

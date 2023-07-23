@@ -21,11 +21,13 @@ CREATE TABLE IF NOT EXISTS posts(
 `;
 const notification_table_creation_query = `
 CREATE TABLE IF NOT EXISTS notification(
-    notificationId INT auto_increment primary key,
     postId INT,
+    userId INT,
     notificationMessage varchar(100) NOT NULL,
-    pClicked TINYINT(1) NOT NULL DEFAULT 0,
-    CONSTRAINT fk_notification_posts_postId FOREIGN KEY(postId) REFERENCES posts(postId) ON DELETE CASCADE);
+    pSeen TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (postId, userId),
+    CONSTRAINT fk_notification_users_userId FOREIGN KEY(userId) REFERENCES users(userId),
+    CONSTRAINT fk_notification_posts_postId FOREIGN KEY(postId) REFERENCES posts(postId));
 `;
 
 

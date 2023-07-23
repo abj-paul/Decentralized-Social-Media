@@ -1,1 +1,7 @@
-- [ ] Notifications removed once are removed forever.
+- [X] Add logout feature.
+- [X] login page, fix wording.
+- [ ] JWT Token not working
+- [ ] Not my notifications
+- [X] Single notification is not removed.
+- [X] Per user notification
+- [X] Notifications removed once are removed forever.

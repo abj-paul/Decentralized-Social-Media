@@ -2,8 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 function authorize(req, res, next) {
-
-	next();
+    next();
     /*
     const token = req.headers['authorization'];
     const secretKey = "mySecretKeyIsYou<3";
@@ -19,6 +18,7 @@ function authorize(req, res, next) {
 	next();
     });*/
 }
+
 
 // Replace this function with your actual authentication logic
 function checkUserAuthentication(req) {

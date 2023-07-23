@@ -9,6 +9,7 @@ const DatabaseService = require("./DatabaseService.js");
 const authorize = require('./authorizationMiddleware.js');
 const FormData = require('form-data');
 const axios = require('axios');
+const job = require('./job.js');
 
 
 // Constants
@@ -17,8 +18,8 @@ const minioClient = new Minio.Client({
   endPoint: 'localhost',
   port: 9000,
   useSSL: false,
-  accessKey: 'wBl9YHNf6XXfdMbWu0MS',
-  secretKey: 'fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM',
+  accessKey: 'GvlsbZl6KfYZeXsNLMOY',
+  secretKey: '6ADMJ6Q8T6ggGOZIuQ6PaUtbaughSWzBGpwTM9rH',
 });
 
 uploadedImages = []
@@ -33,6 +34,10 @@ app.use('/api/v1/images', authorize);
 app.use('/api/v1/user', authorize);
 
 
+// Job 
+setInterval(function() {
+    job.cleanNotification();
+  }, 10 * 1000); // 10 * 10000 milsec = 10s
 
 
 // API Endpoints
@@ -100,7 +105,7 @@ function shuffleArray(array) {
 
 app.get('/api/v1/user/post/get', (req, response) => {
     const userId = req.query.userId;
-    console.log(userId);
+    console.log("GETTING TIMELINE CONTENT");
 
     if (!userId) {
 	return response.status(400).json({ message: 'userId is required' });
@@ -118,6 +123,7 @@ app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) =
     const imageContent = req.file;
     const userId = req.body.userId;
 
+    console.log("UPLOAD POST");
     console.log(req.body);
 
     if (!req.file) {
@@ -142,18 +148,23 @@ app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) =
 	console.log('Image uploaded successfully: ' + objectName);
 	
 	// Save the image name and object name association in the array
-	uploadedImages.push({ imageName, objectName });
-	console.log(uploadedImages);
 	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${objectName}');`)
 	    .then((respond)=>{
 		console.log(respond.insertId);
-		DatabaseService.executeQuery(`INSERT INTO notification(postId, notificationMessage, pClicked) VALUES(${respond.insertId}, '${getFirstSentence(textContent)}', 0);`)
-		    .then((a)=>{
+		DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
+		    .then((userList)=>{
+			for(let i=0; i<userList.length; i++){
+				const tempUserId = userList[i]['userid'];
+				DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
+			}
+
 			return res.status(200).send('Image uploaded successfully.');
 		    })
-	    });
+		})
+		
     });
 });
+
 function getFirstSentence(textContent) {
   const sentenceEndRegex = /[.!?]/;
   const sentencesArray = textContent.split(sentenceEndRegex);
@@ -166,22 +177,24 @@ function getFirstSentence(textContent) {
 app.get('/api/v1/user/notification', (req, response) => {
     const userId = req.query.userId;
 
-    DatabaseService.executeQuery('SELECT A.notificationId,B.postId,C.username, A.notificationMessage FROM notification A, posts B , users C WHERE A.postId = B.postId and B.userId=C.userId and A.pClicked=0 and C.userId='+userId)
+    DatabaseService.executeQuery('SELECT A.userId,B.postId,C.username, A.notificationMessage FROM notification A, posts B , users C WHERE A.postId = B.postId and B.userId=C.userId and A.pSeen=0 and A.userId='+userId)
 	.then((notifications)=>{
 	    response.status(200).send({"notifications":notifications});
 	})
 });
 
-app.delete('/api/v1/user/notification', (req, response) => {
-    const notificationId = req.query.notificationId;
+app.patch('/api/v1/user/notification', (req, response) => {
+    const postId = req.body.postId;
+    const userId = req.body.userId;
 
-    DatabaseService.executeQuery('DELETE FROM notification WHERE notificationId='+notificationId)
+    DatabaseService.executeQuery(`UPDATE notification SET pSeen=1 WHERE postId=${postId} and userId=${userId};`)
 	.then((notifications)=>{
 	    response.status(200).send({"notifications":notifications});
 	})
 });
 
 
+/*
 app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {
     console.log("Reached this api");
   if (!req.file) {
@@ -211,6 +224,7 @@ app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {
     return res.status(200).send('Image uploaded successfully.');
   });
 });
+*/
 
 // Endpoint to get the image by name
 app.get('/api/v1/images/:imageName', (req, res) => {
