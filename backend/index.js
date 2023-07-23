@@ -231,14 +231,15 @@ app.get('/api/v1/images/:imageName', (req, res) => {
   const { imageName } = req.params;
 
   // Find the corresponding object name in the array
-  const uploadedImage = uploadedImages.find(img => img.imageName === imageName);
+  //const uploadedImage = uploadedImages.find(img => img.imageName === imageName);
 
-  if (!uploadedImage) {
+  /*if (!uploadedImage) {
     return res.status(404).send('Image not found.');
-  }
+  }*/
 
   const bucketName = 'posts'; // Replace with your desired bucket name
-  const objectName = uploadedImage.objectName;
+  //const objectName = uploadedImage.objectName;
+  const objectName = imageName;
 
   minioClient.getObject(bucketName, objectName, (err, dataStream) => {
     if (err) {
