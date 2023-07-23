@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Notification } from '../model/Notification';
 
@@ -16,17 +16,25 @@ export class ProfileComponent implements OnInit{
 
   ngOnInit(): void {
     const userId = localStorage.getItem("userId");
-    this.http.get<any>("http://localhost:3000/api/v1/user/notification?userId="+userId)
+    console.log(userId);
+    
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
+
+
+    this.http.get<any>("http://localhost:3000/api/v1/user/notification?userId="+userId, {headers})
     .subscribe((response)=>{
+      console.log(response.notifications);
       this.notifications = response.notifications;
     });
   }
 
   removeNotification(userId:number, postId:number):void {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
+
     this.http.patch('http://localhost:3000/api/v1/user/notification', {
       "userId" : userId,
       "postId" : postId
-    })
+    }, {headers})
     .subscribe((response)=>{
       let newNotifications : Notification[] = [];
       this.notifications.forEach((element)=>{

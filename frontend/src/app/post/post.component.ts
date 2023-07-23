@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
@@ -28,7 +28,10 @@ export class PostComponent {
     form.append("imageContent", this.imageContent, this.imageContent.name);
     form.append("userId", userId);
 
-    this.http.post<any>("http://localhost:3000/api/v1/user/post/upload", form)
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
+
+
+    this.http.post<any>("http://localhost:3000/api/v1/user/post/upload", form, {headers})
     .subscribe((res)=>{
       console.log(res);
     });
