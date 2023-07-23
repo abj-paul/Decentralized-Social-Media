@@ -1,9 +1,9 @@
 // authorizationMiddleware.js
 const jwt = require('jsonwebtoken');
 
-function authorize(req, res, next) {
-    next();
-    /*
+/*function authorize(req, res, next) {
+    //next();
+    
     const token = req.headers['authorization'];
     const secretKey = "mySecretKeyIsYou<3";
 
@@ -16,8 +16,38 @@ function authorize(req, res, next) {
 	
 	req.user = decoded;
 	next();
-    });*/
+    });
+}*/
+function authorize(req, res, next) {
+    //next();
+    
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+
+        var token = req.headers.authorization.split(' ')[1];
+        console.log(token);
+
+        const secretKey = "mySecretKeyIsYou<3";
+
+        if (token == 'null') {
+            return res.json({ success: false, message: 'No Token Provided' });
+        }
+        jwt.verify(token, secretKey, (err, userInfo) => {
+            if (err) {
+                console.log("NOT AUTHORIZED!!!");
+                return res.status(403).json({ success: false, message: 'Invalid Token' });
+            }
+            else {
+                req.user = userInfo;
+                next();
+            }
+        })
+    }
+    else {
+        return res.json({ success: false, message: 'Access denied' });
+    }
+
 }
+
 
 
 // Replace this function with your actual authentication logic
