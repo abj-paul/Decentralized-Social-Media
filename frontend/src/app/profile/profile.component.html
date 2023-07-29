@@ -1,5 +1,18 @@
-<div class="container">
-    <table class="table">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <!-- Add Bootstrap CSS link here -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="table-responsive">
+      <table class="table table-bordered">
         <thead>
           <tr>
             <th scope="col">From</th>
@@ -9,14 +22,23 @@
         </thead>
         <tbody>
           <tr *ngFor="let notification of notifications">
-            <td>{{notification.username}}</td>
-            <td>{{notification.notificationMessage}}</td>
-            <td><button (click)="removeNotification(notification.userId, notification.postId)">Remove</button></td>
+            <td>{{ notification.username }}</td>
+            <td>{{ notification.notificationMessage }}</td>
+            <td><button (click)="removeNotification(notification.userId, notification.postId)"
+                class="btn btn-danger">Remove</button></td>
           </tr>
         </tbody>
-    </table>
-</div>
+      </table>
+    </div>
+  </div>
 
-<div class="logout">
-  <a [routerLink]="['/home']">Logout</a>
-</div>
+  <div class="logout">
+    <a [routerLink]="['/home']" class="btn btn-primary">Logout</a>
+  </div>
+
+  <!-- Add Bootstrap and jQuery scripts here -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

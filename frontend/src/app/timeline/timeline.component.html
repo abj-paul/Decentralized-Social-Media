@@ -1,20 +1,56 @@
-<p>Timeline</p>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="createPost">
-    <a [routerLink]="['/post']">Create Post</a>
-</div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline</title>
+  <!-- Add Bootstrap CSS link here -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
 
-<div class="container" *ngFor="let post of posts">
-    <div class="post">
-        <pre>
-            {{post.username}}
-            {{post.textContent}}
-            <img [src]="'http://localhost:3000/api/v1/images/'+post.imageContent" class="postImage">
-        </pre>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h2 class="timeline-heading">Timeline</h2>
+      </div>
     </div>
-</div>
+    <div class="row">
+      <div class="col">
+        <div class="createPost mb-3">
+          <a [routerLink]="['/post']" class="btn btn-primary">Create Post</a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="timeline">
+          <div class="container" *ngFor="let post of posts">
+            <div class="post card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">{{ post.username }}</h5>
+                <p class="card-text">{{ post.textContent }}</p>
+                <img [src]="'http://localhost:3000/api/v1/images/'+post.imageContent" class="postImage img-fluid"
+                  alt="Post Image">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="createPost mt-3">
+          <a [routerLink]="['/profile']" class="btn btn-primary">Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Add Bootstrap and jQuery scripts here -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 
-<div class="createPost">
-    <a [routerLink]="['/profile']">Profile</a>
-</div>
+</html>

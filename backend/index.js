@@ -18,8 +18,8 @@ const minioClient = new Minio.Client({
   endPoint: 'localhost',
   port: 9000,
   useSSL: false,
-  accessKey: 'GvlsbZl6KfYZeXsNLMOY',
-  secretKey: '6ADMJ6Q8T6ggGOZIuQ6PaUtbaughSWzBGpwTM9rH',
+  accessKey: 'wBl9YHNf6XXfdMbWu0MS',
+  secretKey: 'fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM',
 });
 
 uploadedImages = []
@@ -30,7 +30,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 const upload = multer({ dest: 'uploads/' });
-app.use('/api/v1/images', authorize);
+//app.use('/api/v1/images', authorize);
 app.use('/api/v1/user', authorize);
 
 

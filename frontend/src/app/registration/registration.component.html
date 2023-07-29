@@ -1,16 +1,37 @@
-<div class="container">
-    <p>Registration</p>
-    <div class="form-group">
-        <input type="text" name="username" placeholder="Enter username" [(ngModel)]="username" class="form-control">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Page</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow">
+      <h2 class="text-center mb-4">Registration</h2>
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" placeholder="Enter username" [(ngModel)]="username"
+          class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" placeholder="Enter password" [(ngModel)]="password"
+          class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" placeholder="Enter Description" cols="30" rows="5"
+          [(ngModel)]="description" class="form-control"></textarea>
+      </div>
+      <div class="form-group text-center">
+        <button (click)="registerUser()" class="btn btn-primary">Register</button>
+        <span class="ml-2">{{ registrationStatus }}</span>
+      </div>
     </div>
-    <div class="form-group">
-        <input type="password" name="password" placeholder="Enter password" [(ngModel)]="password" class="form-control">
-    </div>
-    <div class="form-group">
-        <textarea name="description" name="description" placeholder="Enter Description" cols="30" rows="10" [(ngModel)]="description"></textarea>
-    </div>
-    <div class="form-group">
-        <button (click)="registerUser()">Register!</button>
-        <span>{{registrationStatus}}</span>
-    </div>
-</div>
+  </div>
+
+  <!-- Add Bootstrap and jQuery scripts here -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+

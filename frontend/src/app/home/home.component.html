@@ -1,7 +1,14 @@
-<div class="container">
-    <div class="">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur aut dolor ipsam sed aliquam officia. Cupiditate autem, dolor sit odio doloremque deserunt laboriosam adipisci magni. Sequi molestiae aliquam amet distinctio.
+<div class="container mt-5">
+    <div class="jumbotron">
+      <h1>Welcome to DeSo!</h1>
+      <p>Decentralized social media is a concept that seeks to revolutionize the way social networking platforms operate. Unlike traditional centralized social media platforms where data and control are concentrated in the hands of a single entity (the platform owner), decentralized social media aims to distribute ownership, control, and data across a network of peers or nodes.</p>
     </div>
-    <a [routerLink]="['/login']">Login</a> <br>
-    <a [routerLink]="['/registration']">registration</a>
-</div>
+    <div class="row">
+      <div class="col-md-6">
+        <a class="btn btn-primary btn-block" [routerLink]="['/login']" style="float: left">Login</a>
+      </div>
+      <div class="col-md-6">
+        <a class="btn btn-success btn-block" [routerLink]="['/registration']" style="float: right">Registration</a>
+      </div>
+    </div>
+  </div>
