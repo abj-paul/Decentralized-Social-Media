@@ -112,7 +112,7 @@ app.get('/api/v1/user/post/single/', (req, response) => {
 	return response.status(400).json({ message: 'postId is required' });
     }
     
-    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.postId!='+postId)
+    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.postId='+postId)
 	.then((result)=>{
 	    response.status(200).send({"postContent":result});
 	});
@@ -143,7 +143,19 @@ app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) =
     console.log(req.body);
 
     if (!req.file) {
-	return res.status(400).send('No image file found.');
+        console.log("No image found. Inserting text only.");
+        DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', 'noimage');`)
+        .then((respond)=>{
+            console.log(respond.insertId);
+            DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
+                .then((userList)=>{
+                for(let i=0; i<userList.length; i++){
+                    const tempUserId = userList[i]['userid'];
+                    DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
+                }
+            })
+            })
+        return res.status(200).send({"message":"Post uploaded."});
     }
 
     const filePath = req.file.path;

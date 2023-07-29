@@ -45,6 +45,7 @@ async function executeQuery(sql_query){
     return new Promise((resolve, reject)=>{
         DB_CONNECTION.query(sql_query, (err, results, fields)=>{
             if(err) {
+                console.log("ERROR in database service!");
                 reject(err);
             }
 	    console.log(`Executed Query '${sql_query}'`);

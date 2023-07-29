@@ -33,7 +33,7 @@ export class ProfileComponent implements OnInit{
 
   viewNotification(userId:number, postId:number):void {
     this.shared.setPostId(postId);
-    this.removeNotification(userId, postId);
+    //this.removeNotification(userId, postId);
     this.router.navigate(["/view"]);
   }
 

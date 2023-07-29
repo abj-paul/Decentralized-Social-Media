@@ -32,7 +32,8 @@ export class PostComponent implements OnInit{
 
     const form = new FormData();
     form.append("textContent", this.textContent);
-    form.append("imageContent", this.imageContent, this.imageContent.name);
+    if(this.imageContent)
+      form.append("imageContent", this.imageContent, this.imageContent.name);
     form.append("userId", userId);
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
