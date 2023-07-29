@@ -115,6 +115,7 @@ app.get('/api/v1/user/post/get', (req, response) => {
     DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and users.userId!='+userId)
 	.then((result)=>{
 	    const posts = shuffleArray(result);
+
 	    response.status(200).send({"posts":posts});
 	});
 });
@@ -149,7 +150,11 @@ app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) =
 	console.log('Image uploaded successfully: ' + objectName);
 	
 	// Save the image name and object name association in the array
-	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${objectName}');`)
+    const serverUrl = 'http://localhost:9000';
+    const bucketName = 'posts';
+    const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
+
+	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${imageUrl}');`)
 	    .then((respond)=>{
 		console.log(respond.insertId);
 		DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
@@ -227,7 +232,7 @@ app.post('/api/v1/images/upload', upload.single('image'), (req, res) => {
     return res.status(200).send('Image uploaded successfully.');
   });
 });
-*/
+
 
 // Endpoint to get the image by name
 app.get('/api/v1/images/:imageName', (req, res) => {
@@ -238,7 +243,7 @@ app.get('/api/v1/images/:imageName', (req, res) => {
 
   /*if (!uploadedImage) {
     return res.status(404).send('Image not found.');
-  }*/
+  }
 
   const bucketName = 'posts'; // Replace with your desired bucket name
   //const objectName = uploadedImage.objectName;
@@ -255,7 +260,7 @@ app.get('/api/v1/images/:imageName', (req, res) => {
   });
 
 });
-
+*/
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
