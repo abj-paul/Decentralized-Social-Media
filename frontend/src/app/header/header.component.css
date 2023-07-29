@@ -1,0 +1,8 @@
+/* Custom CSS styles for the header component */
+.navbar {
+    padding: 10px;
+  }
+  .navbar img {
+    max-height: 30px;
+  }
+  

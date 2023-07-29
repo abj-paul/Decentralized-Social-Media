@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Post } from '../model/Post';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { SharedServiceService } from '../shared-service.service';
 
 @Component({
   selector: 'app-timeline',
@@ -10,9 +11,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class TimelineComponent implements OnInit{
   posts : Post [] = [];
 
-  constructor(private http : HttpClient){}
+  constructor(private http : HttpClient, private shared : SharedServiceService){}
 
   ngOnInit(): void {
+    this.shared.setRoute("timeline");
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
     const userId = localStorage.getItem("userId");
     console.log(userId);

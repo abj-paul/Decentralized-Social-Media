@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Notification } from '../model/Notification';
+import { SharedServiceService } from '../shared-service.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,9 +13,10 @@ export class ProfileComponent implements OnInit{
   userId  = localStorage.getItem("userId");
   username = localStorage.getItem("username");
   notifications : Notification[] = [];
-  constructor(private http : HttpClient){}
+  constructor(private http : HttpClient, private shared : SharedServiceService){}
 
   ngOnInit(): void {
+    this.shared.setRoute("profile");
     const userId = localStorage.getItem("userId");
     console.log(userId);
     

@@ -1,17 +1,21 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SharedServiceService } from '../shared-service.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit{
   username : string = "";
   password : string = "";
   loginStatus : string = "";
 
-  constructor(private http : HttpClient, private router : Router){}
+  constructor(private http : HttpClient, private router : Router, private shared : SharedServiceService){}
+  ngOnInit(): void {
+    this.shared.setRoute("login");
+  }
 
   authenticate():void{
     this.http.post<any>("http://localhost:3000/api/v1/authentication/login", {

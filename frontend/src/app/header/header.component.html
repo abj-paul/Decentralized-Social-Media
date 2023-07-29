@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <!-- Your company logo goes here -->
+      <a class="navbar-brand" routerLink="/home">
+        <img src="../../assets/DeSo-logo.png" alt="Company Logo">
+        DeSo 
+      </a>
+
+      <div class="">
+        {{current_page_name}}
+      </div>
+
+      <button class="btn btn-outline-primary" (click)="goBack()">
+        <i class="fa fa-arrow-left"></i> Go Back
+      </button>
+    </div>
+  </nav>
+  
