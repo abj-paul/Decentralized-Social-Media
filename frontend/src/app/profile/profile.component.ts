@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Notification } from '../model/Notification';
 import { SharedServiceService } from '../shared-service.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -13,7 +14,7 @@ export class ProfileComponent implements OnInit{
   userId  = localStorage.getItem("userId");
   username = localStorage.getItem("username");
   notifications : Notification[] = [];
-  constructor(private http : HttpClient, private shared : SharedServiceService){}
+  constructor(private http : HttpClient, private shared : SharedServiceService, private router : Router){}
 
   ngOnInit(): void {
     this.shared.setRoute("profile");
@@ -28,6 +29,12 @@ export class ProfileComponent implements OnInit{
       console.log(response.notifications);
       this.notifications = response.notifications;
     });
+  }
+
+  viewNotification(userId:number, postId:number):void {
+    this.shared.setPostId(postId);
+    this.removeNotification(userId, postId);
+    this.router.navigate(["/view"]);
   }
 
   removeNotification(userId:number, postId:number):void {

@@ -1,0 +1,7 @@
+<div *ngIf="post">
+    <h2>Post Details</h2>
+    <p>From: {{ post.username }}</p>
+    <p>Post Title: {{ post.textContent }}</p>
+    <img [src]="post.imageContent" alt="">
+  </div>
+  

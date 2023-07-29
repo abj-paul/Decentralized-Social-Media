@@ -23,6 +23,8 @@ export class HeaderComponent{
       this.router.navigate(["/timeline"]);
     }else if(this.shared.getRoute()=="post"){
       this.router.navigate(["/timeline"]);
+    }else if(this.shared.getRoute()=="single-post"){
+      this.router.navigate(["/timeline"]);
     }
   }
 }

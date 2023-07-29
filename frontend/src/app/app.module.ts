@@ -12,6 +12,7 @@ import { PostComponent } from './post/post.component';
 import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
 import { HeaderComponent } from './header/header.component';
+import { SinglePostComponent } from './single-post/single-post.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { HeaderComponent } from './header/header.component';
     PostComponent,
     ProfileComponent,
     HomeComponent,
-    HeaderComponent
+    HeaderComponent,
+    SinglePostComponent
   ],
   imports: [
     BrowserModule,

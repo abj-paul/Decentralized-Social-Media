@@ -24,8 +24,8 @@
           <tr *ngFor="let notification of notifications">
             <td>{{ notification.username }}</td>
             <td>{{ notification.notificationMessage }}</td>
-            <td><button (click)="removeNotification(notification.userId, notification.postId)"
-                class="btn btn-danger">Remove</button></td>
+            <td><button (click)="viewNotification(notification.userId, notification.postId)"
+                class="btn btn-danger">View</button></td>
           </tr>
         </tbody>
       </table>

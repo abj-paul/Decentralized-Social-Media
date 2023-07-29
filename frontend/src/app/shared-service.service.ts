@@ -6,6 +6,8 @@ import { Injectable } from '@angular/core';
 export class SharedServiceService {
   current_route : string = "";
   username : string = "";
+  postId : number = 1;
+
   constructor() { }
 
   setRoute(newRoute : string) : void {
@@ -13,5 +15,12 @@ export class SharedServiceService {
   }
   getRoute():string {
     return this.current_route;
+  }
+
+  getPostId():number {
+    return this.postId;
+  }
+  setPostId(postId:number):void {
+    this.postId = postId;
   }
 }
