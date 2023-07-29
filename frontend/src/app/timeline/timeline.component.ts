@@ -10,12 +10,13 @@ import { SharedServiceService } from '../shared-service.service';
 })
 export class TimelineComponent implements OnInit{
   posts : Post [] = [];
+  username : string = "";
 
   constructor(private http : HttpClient, private shared : SharedServiceService){}
 
   ngOnInit(): void {
     this.shared.setRoute("timeline");
-
+    this.username = this.shared.username;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
     const userId = localStorage.getItem("userId");
     console.log(userId);

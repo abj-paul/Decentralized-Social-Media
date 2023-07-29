@@ -159,7 +159,7 @@ app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) =
 				DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
 			}
 
-			return res.status(200).send('Image uploaded successfully.');
+			return res.status(200).send({'message':'Image uploaded successfully.'});
 		    })
 		})
 		

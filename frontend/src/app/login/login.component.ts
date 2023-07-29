@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit{
       localStorage.setItem("username", response["username"]);
       console.log(response);
 
+      this.shared.username = this.username;
       this.router.navigate(["/timeline"]);
     })
   }

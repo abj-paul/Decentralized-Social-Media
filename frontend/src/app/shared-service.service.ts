@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class SharedServiceService {
   current_route : string = "";
+  username : string = "";
   constructor() { }
 
   setRoute(newRoute : string) : void {

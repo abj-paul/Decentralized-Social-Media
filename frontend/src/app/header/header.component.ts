@@ -21,6 +21,8 @@ export class HeaderComponent{
       this.router.navigate(["/profile"]);
     }else if(this.shared.getRoute()=="profile"){
       this.router.navigate(["/timeline"]);
+    }else if(this.shared.getRoute()=="post"){
+      this.router.navigate(["/timeline"]);
     }
   }
 }
