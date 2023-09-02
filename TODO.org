@@ -1,0 +1,4 @@
+- [ ] Fix API endpoints
+- [ ] Finalize the microservices
+- [ ] Containerize microservices
+- [ ] Orchestrate them

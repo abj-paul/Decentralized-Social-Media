@@ -104,21 +104,20 @@ function shuffleArray(array) {
   return array;
 }
 
-app.get('/api/v1/user/post/single/', (req, response) => {
-    const postId = req.query.postId;
-    console.log("Getting post with Id="+postId);
+app.get('/api/v1/user/post/:postId', (req, response) => {
+    const postId = req.params.postId; // Access the postId from route parameters
+    console.log("Getting post with Id=" + postId);
 
     if (!postId) {
-	return response.status(400).json({ message: 'postId is required' });
+        return response.status(400).json({ message: 'postId is required' });
     }
-    
-    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.postId='+postId)
-	.then((result)=>{
-	    response.status(200).send({"postContent":result});
-	});
-});
 
-app.get('/api/v1/user/post/get', (req, response) => {
+    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.postId=' + postId)
+        .then((result) => {
+            response.status(200).send({ "postContent": result });
+        });
+});
+app.get('/api/v1/user/post', (req, response) => {
     const userId = req.query.userId;
     console.log("GETTING TIMELINE CONTENT");
 
@@ -134,7 +133,7 @@ app.get('/api/v1/user/post/get', (req, response) => {
 	});
 });
 
-app.post('/api/v1/user/post/upload', upload.single('imageContent'), (req, res) => {
+app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
     const textContent = req.body.textContent;
     const imageContent = req.file;
     const userId = req.body.userId;

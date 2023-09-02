@@ -21,7 +21,7 @@ export class TimelineComponent implements OnInit{
     const userId = localStorage.getItem("userId");
     console.log(userId);
 
-    this.http.get<any>(`http://localhost:3000/api/v1/user/post/get?userId=${userId}`, {headers}) //
+    this.http.get<any>(`http://localhost:3000/api/v1/user/post?userId=${userId}`, {headers}) //
     .subscribe((response)=>{
       console.log(response);
       
