@@ -1,0 +1,94 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const express = require('express');
+const cors = require('cors');
+const DatabaseService = require("./libs/DatabaseService.js");
+const authorize = require('./libs/authorizationMiddleware.js');
+const FormData = require('form-data');
+const axios = require('axios');
+
+
+// Constants
+const PORT = 3000;
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+app.use('/api/v1/user', authorize);
+
+// API Endpoints
+app.get('/api/v1/', (req,res)=>{
+    const user_table_creation_query = `
+CREATE TABLE IF NOT EXISTS users(
+    userid INT auto_increment primary key,
+    username varchar(30) NOT NULL,
+    password varchar(60) NOT NULL,
+    profilePicture varchar(50),
+    facialRecognition varchar(50),
+    user_description varchar(200)
+)
+`;
+    DatabaseService.executeQuery(user_table_creation_query)
+    .then((result) => {
+        console.log(result);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+    
+    res.send("User table has been created.");
+})
+
+app.post('/api/v1/authentication/register', (req, res) => {
+    const { username, password, description } = req.body;
+
+    DatabaseService.executeQuery('SELECT * FROM users')
+	.then((users)=>{
+	    if (users.some(user => user.username === username)) {
+		return res.status(409).json({ message: 'User already exists' });
+	    }
+	    
+	    bcrypt.genSalt(10, (err, salt) => {
+		if (err) return res.status(500).json({ message: 'Error during password hashing' });
+		
+		bcrypt.hash(password, salt, (err, hash) => {
+		    if (err) return res.status(500).json({ message: 'Error during password hashing' });
+		    users.push({ id: users.length + 1, username, password: hash });
+		    DatabaseService.executeQuery(
+			`INSERT INTO users(username, password, user_description) VALUES ('${username}', '${hash}', '${description}');`
+		    );
+		    return res.status(201).json({ message: 'User registered successfully' });
+		});
+	    });
+	})
+});
+
+app.post('/api/v1/authentication/login', (req, res) => {
+    const { username, password } = req.body;
+
+    DatabaseService.executeQuery(`SELECT * FROM users`)
+	.then((users)=>{
+	    const user = users.find(user => user.username === username);
+	    
+	    if (!user) {
+		return res.status(401).json({ message: 'Authentication failed' });
+	    }
+
+	    bcrypt.compare(password, user.password, (err, result) => {
+		console.log(result);
+		if (err || !result) {
+		    return res.status(401).json({ message: 'Authentication failed' });
+		}
+		
+		const token = jwt.sign({ userId: user.id, username: user.username }, 'mySecretKeyIsYou<3', { expiresIn: '1h' });
+		console.log("Logging in.... "+token);
+		return res.json({ message: 'Authentication successful',  "userId" : user["userid"], "username" : user["username"], "description" : user["description"], token  });
+	    });
+	    
+	});
+    });
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});

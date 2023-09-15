@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mysql_server:
+    image: mysql:8.0
+    container_name: mysql_server
+    environment:
+      MYSQL_DATABASE: 'DeSo'
+      MYSQL_USER: 'abhidb'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    networks:
+      - deso-user-service-network
+
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Specify the path to your Dockerfile
+    container_name: user-service
+    networks:
+      - deso-user-service-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+
+networks:
+  deso-user-service-network:

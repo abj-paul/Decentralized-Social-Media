@@ -1,4 +1,7 @@
-- [ ] Fix API endpoints
-- [ ] Finalize the microservices
-- [ ] Containerize microservices
+- [X] Fix API endpoints
+- [X] Different folder
+- [ ] Different database
+- [ ] Call each other using microservice
+- [ ] Containterize it
+- [ ] Use nginx
 - [ ] Orchestrate them
