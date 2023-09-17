@@ -1,7 +1,7 @@
 const mysql = require("mysql2");
 
 // Global Constants & Variables 
-const DATABASE_HOST = "localhost";
+const DATABASE_HOST = "mysql_post_server";
 const DATABASE_USER = "abhidb";
 const DATABASE_PASSWORD = "admin";
 const DATABASE_NAME = "DeSo";

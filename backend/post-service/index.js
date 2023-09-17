@@ -14,7 +14,7 @@ const axios = require('axios');
 // Constants
 const PORT = 3000;
 const minioClient = new Minio.Client({
-  endPoint: 'localhost',
+  endPoint: 'minio',
   port: 9000,
   useSSL: false,
   accessKey: 'wBl9YHNf6XXfdMbWu0MS',
@@ -30,11 +30,27 @@ app.use(express.json());
 app.use(cors());
 const upload = multer({ dest: 'uploads/' });
 //app.use('/api/v1/images', authorize);
-app.use('/api/v1/user', authorize);
+//app.use('/api/v1/user', authorize);
 
 // API Endpoints
 app.get('/api/v1/', (req,res)=>{
-    res.send("Post Service Server running...");
+    const post_table_creation_query = `
+CREATE TABLE IF NOT EXISTS posts(
+    postId INT auto_increment primary key,
+    userId INT,
+    textContent varchar(500) NOT NULL,
+    imageContent varchar(100) NOT NULL );
+`;
+
+    DatabaseService.executeQuery(post_table_creation_query)
+    .then((result) => {
+        console.log(result);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+    res.send("Post table has been created.");
 })
 
 function shuffleArray(array) {

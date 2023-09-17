@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysql_post_server:
+    image: mysql:8.0
+    container_name: mysql_post_server
+    environment:
+      MYSQL_DATABASE: 'DeSo'
+      MYSQL_USER: 'abhidb'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    networks:
+      - deso-post-service-network
+
+  post-service:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Specify the path to your Dockerfile
+    container_name: post-service
+    networks:
+      - deso-post-service-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /data
+    networks:
+      - deso-post-service-network
+    environment:
+      MINIO_ROOT_USER: wBl9YHNf6XXfdMbWu0MS
+      MINIO_ROOT_PASSWORD: fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM
+    command: server --console-address ":9001" /data
+
+networks:
+  deso-post-service-network:
