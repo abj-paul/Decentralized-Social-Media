@@ -10,7 +10,7 @@ const job = require('./libs/job.js');
 
 
 // Constants
-const PORT = 3000;
+const PORT = 3002;
 const app = express();
 
 // Middleware
@@ -25,7 +25,24 @@ setInterval(function() {
 
 // API Endpoints
 app.get('/api/v1/', (req,res)=>{
-    res.send("Notification Service Server running...");
+    const notification_table_creation_query = `
+CREATE TABLE IF NOT EXISTS notification(
+    postId INT,
+    userId INT,
+    notificationMessage varchar(100) NOT NULL,
+    pSeen TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (postId, userId));
+`;
+
+    DatabaseService.executeQuery(notification_table_creation_query)
+    .then((result) => {
+        console.log(result);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+    res.send("Notification table has been created.");
 })
 
 
@@ -40,6 +57,21 @@ app.get('/api/v1/user/notification', (req, response) => {
 	    response.status(200).send({"notifications":notifications});
 	})
 });
+//DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
+
+app.post('/api/v1/user/notification', (req, response) => {
+    const postId = req.body.postId;
+    const userId = req.body.userId;
+    const notificationMessage = req.body.notificationMessage;
+    const pSeen = req.body.pSeen;
+
+    DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${postId}, '${userId}', '${notificationMessage}', pSeen);`)
+	.then((notification)=>{
+	    console.log(`DEBUG: Notification for ${postId}, ${userId} has been inserted at ${notification.insertId}!`);
+	    response.status(200).send({"status":`Successfully saved the notification at ${notification.insertId}`});
+	});
+});
+
 
 app.patch('/api/v1/user/notification', (req, response) => {
     const postId = req.body.postId;

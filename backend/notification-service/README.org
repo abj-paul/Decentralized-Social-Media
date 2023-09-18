@@ -1,0 +1,39 @@
+* Fire up the dockers!
+Build an image.
+#+begin_src bash
+sudo docker build -t deso-notification-service:v1 .
+#+end_src
+
+Create Network.
+#+begin_src bash
+sudo docker network create deso-notification-service-network
+#+end_src
+
+Start MySQL.
+#+begin_src bash
+sudo docker run \
+  --rm \
+  -d \
+  --name mysql_server \
+  -e MYSQL_DATABASE='DeSo' \
+  -e MYSQL_NOTIFICATION='abhidb' \
+  -e MYSQL_PASSWORD='admin' \
+  -e MYSQL_ROOT_PASSWORD='root' \
+  --network deso-notification-service-network \
+  mysql:8.0 
+#+end_src
+
+Start Notification Service Node Server.
+#+begin_src bash
+sudo docker run \
+  --rm \
+  --name notification-service \
+  --network deso-notification-service-network \
+  -p 3000:3000 \
+  -v $(pwd):/app \
+  deso-notification-service:v1 
+#+end_src
+* Notification Service
+First, tables need to be created so make a call at ~localhost:3000/api/v1~ to create the tables. Then normally proceed with usual REST interactions.
+* Tutorial
+https://www.youtube.com/watch?v=9-iLqe-E9iI

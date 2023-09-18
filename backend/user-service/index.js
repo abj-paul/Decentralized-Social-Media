@@ -14,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use('/api/v1/user', authorize);
+//app.use('/api/v1/user', authorize);
 
 // API Endpoints
 app.get('/api/v1/', (req,res)=>{
@@ -88,6 +88,16 @@ app.post('/api/v1/authentication/login', (req, res) => {
 	    
 	});
     });
+
+
+app.get('/api/v1/user/list', (req, res) => {
+    const userId = req.query.userId;
+    DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
+	.then((userList)=>{
+	    console.log(userList);
+	    res.status(200).send({"userList": userList});
+	});
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

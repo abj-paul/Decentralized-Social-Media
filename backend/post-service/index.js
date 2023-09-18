@@ -12,9 +12,9 @@ const axios = require('axios');
 
 
 // Constants
-const PORT = 3000;
+const PORT = 3001;
 const minioClient = new Minio.Client({
-  endPoint: 'minio',
+  endPoint: 'localhost',
   port: 9000,
   useSSL: false,
   accessKey: 'wBl9YHNf6XXfdMbWu0MS',
@@ -109,24 +109,36 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
     if (!req.file) {
         console.log("No image found. Inserting text only.");
         DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', 'noimage');`)
-        .then((respond)=>{
-            console.log(respond.insertId);
-            DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
-                .then((userList)=>{
-                for(let i=0; i<userList.length; i++){
-                    const tempUserId = userList[i]['userid'];
-                    DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
-                }
-            })
-            })
-        return res.status(200).send({"message":"Post uploaded."});
+	    .then((respond)=>{
+		axios.get('http://localhost:3000/api/v1/user/list', {
+		    params: {
+			userId: userId
+		    }
+		})
+		    .then((response)=>{
+			const userList = response.data.userList;
+			for(let i=0; i<userList.length; i++){
+			    const tempUserId = userList[i]['userid'];
+			    const notification = {
+				"postId": respond.insertId,
+				"userId": tempUserId,
+				"notificationMessage": getFirstSentence(textContent),
+				"pSeen": 0
+			    };
+			    
+			    axios.post('http://localhost:3002/api/v1/user/notification', notification);
+			}
+		    })
+		return res.status(200).send({"message":"Post uploaded."});
+	    })
+	return;
     }
 
     const filePath = req.file.path;
     const metaData = {
 	'Content-Type': req.file.mimetype,
     };
-
+    
     const bucketName = 'posts'; // Replace with your desired bucket name
     const objectName = req.file.originalname;
     const imageName = req.file.originalname; // Save the image name
@@ -147,11 +159,25 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${imageUrl}');`)
 	    .then((respond)=>{
 		console.log(respond.insertId);
-		DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
-		    .then((userList)=>{
+		//DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
+		axios.get('http://localhost:3000/api/v1/user/list', {
+		    params: {
+			userId: userId
+		    }
+		})
+		    .then((response)=>{
+			console.log(response);
+			const userList = response.data.userList;
 			for(let i=0; i<userList.length; i++){
-				const tempUserId = userList[i]['userid'];
-				DatabaseService.executeQuery(`INSERT INTO notification(postId, userId, notificationMessage, pSeen) VALUES(${respond.insertId}, '${tempUserId}', '${getFirstSentence(textContent)}', 0);`);
+			    const tempUserId = userList[i]['userid'];
+			    const notification = {
+				"postId": respond.insertId,
+				"userId": tempUserId,
+				"notificationMessage": getFirstSentence(textContent),
+				"pSeen": 0
+			    };
+			    
+			    axios.post('http://localhost:3002/api/v1/user/notification', notification);
 			}
 
 			return res.status(200).send({'message':'Image uploaded successfully.'});

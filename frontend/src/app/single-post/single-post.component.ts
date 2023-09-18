@@ -17,7 +17,7 @@ export class SinglePostComponent implements OnInit {
     const postId  = this.shared.getPostId();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
-    this.http.get<any>("http://localhost:3000/api/v1/user/post/"+postId, {headers})
+    this.http.get<any>("http://localhost:3001/api/v1/user/post/"+postId, {headers})
     .subscribe((req)=>{
       console.log(req);
       this.post = req.postContent[0];

@@ -39,7 +39,7 @@ export class PostComponent implements OnInit{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
 
-    this.http.post<any>("http://localhost:3000/api/v1/user/post", form, {headers})
+    this.http.post<any>("http://localhost:3001/api/v1/user/post", form, {headers})
     .subscribe((res)=>{
       this.postStatus = res.message;
       console.log(res);

@@ -24,7 +24,7 @@ export class ProfileComponent implements OnInit{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
 
-    this.http.get<any>("http://localhost:3000/api/v1/user/notification?userId="+userId, {headers})
+    this.http.get<any>("http://localhost:3002/api/v1/user/notification?userId="+userId, {headers})
     .subscribe((response)=>{
       console.log(response.notifications);
       this.notifications = response.notifications;
@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit{
   removeNotification(userId:number, postId:number):void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
-    this.http.patch('http://localhost:3000/api/v1/user/notification', {
+    this.http.patch('http://localhost:3002/api/v1/user/notification', {
       "userId" : userId,
       "postId" : postId
     }, {headers})
