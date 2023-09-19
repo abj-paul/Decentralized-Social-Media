@@ -19,7 +19,7 @@ services:
     networks:
       - deso-notification-service-network
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - .:/app
 

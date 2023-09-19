@@ -14,7 +14,7 @@ const axios = require('axios');
 // Constants
 const PORT = 3001;
 const minioClient = new Minio.Client({
-  endPoint: 'localhost',
+  endPoint: 'minio',
   port: 9000,
   useSSL: false,
   accessKey: 'wBl9YHNf6XXfdMbWu0MS',
@@ -69,7 +69,7 @@ app.get('/api/v1/user/post/:postId', (req, response) => {
         return response.status(400).json({ message: 'postId is required' });
     }
 
-    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and posts.postId=' + postId)
+    DatabaseService.executeQuery('SELECT userId, postId, textContent, imageContent FROM posts WHERE posts.postId=' + postId)
         .then((result) => {
             response.status(200).send({ "postContent": result });
         });
@@ -82,7 +82,7 @@ app.get('/api/v1/user/post', (req, response) => {
 	return response.status(400).json({ message: 'userId is required' });
     }
     
-    DatabaseService.executeQuery('SELECT users.userId, postId, username, textContent, imageContent FROM posts, users WHERE users.userId=posts.userId and users.userId!='+userId)
+    DatabaseService.executeQuery('SELECT userId, postId, textContent, imageContent FROM posts WHERE userId!='+userId)
 	.then((result)=>{
 	    const posts = shuffleArray(result);
 
@@ -152,7 +152,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 	console.log('Image uploaded successfully: ' + objectName);
 	
 	// Save the image name and object name association in the array
-    const serverUrl = 'http://localhost:9000';
+    const serverUrl = 'minio:9000';
     const bucketName = 'posts';
     const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
 
