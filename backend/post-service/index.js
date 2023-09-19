@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS posts(
     postId INT auto_increment primary key,
     userId INT,
     textContent varchar(500) NOT NULL,
-    imageContent varchar(100) NOT NULL );
+    imageContent varchar(100) NOT NULL);
 `;
 
     DatabaseService.executeQuery(post_table_creation_query)
@@ -98,93 +98,70 @@ function getFirstSentence(textContent) {
   return firstSentence;
 }
 
-app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
-    const textContent = req.body.textContent;
-    const imageContent = req.file;
-    const userId = req.body.userId;
-
-    console.log("UPLOAD POST");
-    console.log(req.body);
-
-    if (!req.file) {
-        console.log("No image found. Inserting text only.");
-        DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', 'noimage');`)
-	    .then((respond)=>{
-		axios.get('http://172.21.0.2:3000/api/v1/user/list', {
-		    params: {
-			userId: userId
-		    }
-		})
-		    .then((response)=>{
-			const userList = response.data.userList;
-			for(let i=0; i<userList.length; i++){
-			    const tempUserId = userList[i]['userid'];
-			    const notification = {
-				"postId": respond.insertId,
-				"userId": tempUserId,
-				"notificationMessage": getFirstSentence(textContent),
-				"pSeen": 0
-			    };
-			    
-			    axios.post('http://127.24.0.3:3002/api/v1/user/notification', notification);
-			}
-		    })
-		return res.status(200).send({"message":"Post uploaded."});
-	    })
-	return;
-    }
-
-    const filePath = req.file.path;
-    const metaData = {
-	'Content-Type': req.file.mimetype,
-    };
-    
-    const bucketName = 'posts'; // Replace with your desired bucket name
-    const objectName = req.file.originalname;
-    const imageName = req.file.originalname; // Save the image name
-
-    minioClient.fPutObject(bucketName, objectName, filePath, metaData, (err, etag) => {
-	if (err) {
-	    console.log(err);
-	    return res.status(500).send('Error uploading the image.');
+app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) => {
+    try {
+        const { userId, textContent } = req.body;
+        let imageContent = 'noimage';
+        
+        if (req.file) {
+            // If an image file is provided, upload it to Minio
+            const filePath = req.file.path;
+            const metaData = {
+                'Content-Type': req.file.mimetype,
+            };
+            
+            const bucketName = 'posts'; // Replace with your desired bucket name
+            const objectName = req.file.originalname;
+            
+            await minioClient.fPutObject(bucketName, objectName, filePath, metaData);
+            
+            // Update imageContent to the Minio object URL
+            const serverUrl = 'http://127.26.0.4:9000';
+            const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
+            imageContent = imageUrl;
+        }
+        
+        // Insert the post into the database
+        const insertResult = await DatabaseService.executeQuery(`
+            INSERT INTO posts(userId, textContent, imageContent)
+            VALUES (${userId}, '${textContent}', '${imageContent}')
+        `);
+        
+        // Fetch the user list
+        const userServiceResponse = await axios.get('http://172.21.0.2:3000/api/v1/user/list', {
+            params: {
+                userId: userId
+            }
+        });
+        
+        const userList = userServiceResponse.data.userList;
+        
+        // Create an array of notification promises
+        const notificationPromises = userList.map(async (user) => {
+            const tempUserId = user['userid'];
+            const notification = {
+                "postId": insertResult.insertId,
+                "userId": tempUserId,
+                "notificationMessage": getFirstSentence(textContent),
+                "pSeen": 0
+            };
+            
+            // Send a notification to each user
+            await axios.post('http://172.24.0.3:3002/api/v1/user/notification', notification);
+        });
+        
+        // Wait for all notification promises to complete
+	try{
+            await Promise.all(notificationPromises);
+	}catch(error){
+            console.error('Error sending notification:', error.message);
 	}
-	
-	console.log('Image uploaded successfully: ' + objectName);
-	
-	// Save the image name and object name association in the array
-    const serverUrl = 'http://127.26.0.4:9000';
-    const bucketName = 'posts';
-    const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
-
-	DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', '${imageUrl}');`)
-	    .then((respond)=>{
-		console.log(respond.insertId);
-		//DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
-		axios.get('http://172.21.0.2:3000/api/v1/user/list', {
-		    params: {
-			userId: userId
-		    }
-		})
-		    .then((response)=>{
-			console.log(response);
-			const userList = response.data.userList;
-			for(let i=0; i<userList.length; i++){
-			    const tempUserId = userList[i]['userid'];
-			    const notification = {
-				"postId": respond.insertId,
-				"userId": tempUserId,
-				"notificationMessage": getFirstSentence(textContent),
-				"pSeen": 0
-			    };
-			    
-			    axios.post('http://172.24.0.3:3002/api/v1/user/notification', notification);
-			}
-
-			return res.status(200).send({'message':'Image uploaded successfully.'});
-		    })
-		})
-		
-    });
+        
+        return res.status(200).send({ 'message': 'Post uploaded successfully. Notifications sent.' });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).send({ 'message': 'Internal server error.' });
+    }
 });
 
 app.listen(PORT, () => {

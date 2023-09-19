@@ -52,7 +52,7 @@ app.get('/api/v1/user/notification', (req, response) => {
     console.log("GETTING NOTIFICATION FOR "+userId);
 
 
-    DatabaseService.executeQuery('SELECT A.userId,B.postId,C.username, A.notificationMessage FROM notification A, posts B , users C WHERE A.postId = B.postId and B.userId=C.userId and A.pSeen=0 and A.userId='+userId)
+    DatabaseService.executeQuery('SELECT userId,postId,notificationMessage FROM notification WHERE userId='+userId)
 	.then((notifications)=>{
 	    response.status(200).send({"notifications":notifications});
 	})

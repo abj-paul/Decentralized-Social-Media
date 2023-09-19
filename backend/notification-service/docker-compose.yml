@@ -8,6 +8,7 @@ services:
       MYSQL_USER: 'abhidb'
       MYSQL_PASSWORD: 'admin'
       MYSQL_ROOT_PASSWORD: 'admin'
+    restart: on-failure 
     networks:
       - deso-notification-service-network
 
@@ -22,6 +23,7 @@ services:
       - "3002:3002"
     volumes:
       - .:/app
+    restart: on-failure 
 
 networks:
   deso-notification-service-network:

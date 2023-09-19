@@ -37,3 +37,5 @@ sudo docker run \
 First, tables need to be created so make a call at ~localhost:3000/api/v1~ to create the tables. Then normally proceed with usual REST interactions.
 * Tutorial
 https://www.youtube.com/watch?v=9-iLqe-E9iI
+
+Connect to docker MySQL using ~sudo docker exec -it cac7c mysql -u abhidb -p~.
