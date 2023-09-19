@@ -110,7 +110,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
         console.log("No image found. Inserting text only.");
         DatabaseService.executeQuery(`INSERT INTO posts(userId, textContent, imageContent) VALUES(${userId}, '${textContent}', 'noimage');`)
 	    .then((respond)=>{
-		axios.get('http://localhost:3000/api/v1/user/list', {
+		axios.get('http://172.21.0.2:3000/api/v1/user/list', {
 		    params: {
 			userId: userId
 		    }
@@ -126,7 +126,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 				"pSeen": 0
 			    };
 			    
-			    axios.post('http://localhost:3002/api/v1/user/notification', notification);
+			    axios.post('http://127.24.0.3:3002/api/v1/user/notification', notification);
 			}
 		    })
 		return res.status(200).send({"message":"Post uploaded."});
@@ -152,7 +152,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 	console.log('Image uploaded successfully: ' + objectName);
 	
 	// Save the image name and object name association in the array
-    const serverUrl = 'minio:9000';
+    const serverUrl = 'http://127.26.0.4:9000';
     const bucketName = 'posts';
     const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
 
@@ -160,7 +160,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 	    .then((respond)=>{
 		console.log(respond.insertId);
 		//DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
-		axios.get('http://localhost:3000/api/v1/user/list', {
+		axios.get('http://172.21.0.2:3000/api/v1/user/list', {
 		    params: {
 			userId: userId
 		    }
@@ -177,7 +177,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), (req, res) => {
 				"pSeen": 0
 			    };
 			    
-			    axios.post('http://localhost:3002/api/v1/user/notification', notification);
+			    axios.post('http://172.24.0.3:3002/api/v1/user/notification', notification);
 			}
 
 			return res.status(200).send({'message':'Image uploaded successfully.'});

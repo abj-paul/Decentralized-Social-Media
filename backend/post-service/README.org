@@ -35,6 +35,11 @@ sudo docker run \
 #+end_src
 * Post Service
 First, tables need to be created so make a call at ~localhost:3000/api/v1~ to create the tables. Then you need to login to minio in ~localhost:9000~ using your access key, secret key and create the ~posts~ bucket. Then normally proceed with usual REST interactions.
+
+1. Create POST Table
+2. Create Minio Bucket
+3. Find ip address of user service ~docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' user-service~.
+4. Find ip address of notification service ~docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' notification-service~.
 * Tutorial
 https://www.youtube.com/watch?v=9-iLqe-E9iI
 https://stackoverflow.com/questions/67285745/how-can-i-get-minio-access-and-secret-key
