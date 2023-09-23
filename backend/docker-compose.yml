@@ -1,0 +1,92 @@
+version: '3'
+services:
+  mysql_server:
+    image: mysql:8.0
+    container_name: mysql_server
+    environment:
+      MYSQL_DATABASE: 'DeSo'
+      MYSQL_USER: 'abhidb'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    networks:
+      - deso-user-service-network
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile  # Specify the path to your Dockerfile
+    container_name: user-service
+    networks:
+      - deso-user-service-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./user-service:/app
+
+  mysql_post_server:
+    image: mysql:8.0
+    container_name: mysql_post_server
+    environment:
+      MYSQL_DATABASE: 'DeSo'
+      MYSQL_USER: 'abhidb'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    networks:
+      - deso-post-service-network
+
+  post-service:
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile
+    container_name: post-service
+    networks:
+      - deso-post-service-network
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./post-service:/app
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /data
+    networks:
+      - deso-post-service-network
+    environment:
+      MINIO_ROOT_USER: wBl9YHNf6XXfdMbWu0MS
+      MINIO_ROOT_PASSWORD: fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM
+    command: ["server", "--console-address", ":9001", "/data"]
+
+  mysql_notification_server:
+    image: mysql:8.0
+    container_name: mysql_notification_server
+    environment:
+      MYSQL_DATABASE: 'DeSo'
+      MYSQL_USER: 'abhidb'
+      MYSQL_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: 'admin'
+    restart: on-failure 
+    networks:
+      - deso-notification-service-network
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile  # Specify the path to your Dockerfile
+    container_name: notification-service
+    networks:
+      - deso-notification-service-network
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./notification-service:/app
+    restart: on-failure 
+
+networks:
+  deso-user-service-network:
+  deso-post-service-network:
+  deso-notification-service-network:

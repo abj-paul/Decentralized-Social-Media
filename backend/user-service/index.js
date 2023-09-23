@@ -94,7 +94,7 @@ app.get('/api/v1/user/list', (req, res) => {
     const userId = req.query.userId;
     DatabaseService.executeQuery('SELECT * FROM users WHERE userid!='+userId)
 	.then((userList)=>{
-	    console.log(userList);
+	    console.log(`DEBUG: User list endpoint - ${userList}`);
 	    res.status(200).send({"userList": userList});
 	});
 });

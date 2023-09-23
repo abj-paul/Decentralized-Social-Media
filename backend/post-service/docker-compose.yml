@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: 'admin'
       MYSQL_ROOT_PASSWORD: 'admin'
     networks:
-      - deso-post-service-network
+      - deso-service-network
 
   post-service:
     build:
@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: post-service
     networks:
-      - deso-post-service-network
+      - deso-service-network
     ports:
       - "3001:3001"
     volumes:
@@ -32,11 +32,11 @@ services:
     volumes:
       - /data
     networks:
-      - deso-post-service-network
+      - deso-service-network
     environment:
       MINIO_ROOT_USER: wBl9YHNf6XXfdMbWu0MS
       MINIO_ROOT_PASSWORD: fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM
     command: ["server", "--console-address", ":9001", "/data"]
 
 networks:
-  deso-post-service-network:
+  deso-service-network:

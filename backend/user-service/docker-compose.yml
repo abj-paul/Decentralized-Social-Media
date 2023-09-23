@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: 'admin'
       MYSQL_ROOT_PASSWORD: 'admin'
     networks:
-      - deso-user-service-network
+      - deso-service-network
 
   user-service:
     build:
@@ -17,11 +17,11 @@ services:
       dockerfile: Dockerfile  # Specify the path to your Dockerfile
     container_name: user-service
     networks:
-      - deso-user-service-network
+      - deso-service-network
     ports:
       - "3000:3000"
     volumes:
       - .:/app
 
 networks:
-  deso-user-service-network:
+  deso-service-network:

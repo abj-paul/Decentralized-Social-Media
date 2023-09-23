@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'admin'
     restart: on-failure 
     networks:
-      - deso-notification-service-network
+      - deso-service-network
 
   notification-service:
     build:
@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile  # Specify the path to your Dockerfile
     container_name: notification-service
     networks:
-      - deso-notification-service-network
+      - deso-service-network
     ports:
       - "3002:3002"
     volumes:
@@ -26,4 +26,4 @@ services:
     restart: on-failure 
 
 networks:
-  deso-notification-service-network:
+  deso-service-network:

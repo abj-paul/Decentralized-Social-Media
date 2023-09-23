@@ -135,6 +135,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
         });
         
         const userList = userServiceResponse.data.userList;
+	console.log(`DEBUG: User List Received = ${userList}`);
         
         // Create an array of notification promises
         const notificationPromises = userList.map(async (user) => {
@@ -148,6 +149,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
             
             // Send a notification to each user
             await axios.post('http://172.24.0.3:3002/api/v1/user/notification', notification);
+	    console.log(`DEBUG: Control reached into axios request on post notification.`);
         });
         
         // Wait for all notification promises to complete
