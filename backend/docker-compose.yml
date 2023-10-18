@@ -1,5 +1,15 @@
 version: '3'
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx-config:/etc/nginx/conf.d
+    networks:
+      - deso-network
+
   mysql_user_server:
     image: mysql:8.0
     container_name: mysql_user_server

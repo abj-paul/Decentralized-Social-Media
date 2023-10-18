@@ -5,9 +5,9 @@ import { Injectable } from '@angular/core';
 })
 export class BackendServersService {
 
-  private loginServer : string = "http://localhost:3000";
-  private postServer : string = "http://localhost:3001";
-  private notificationServer : string = "http://localhost:3002";
+  private loginServer : string = "http://localhost:80";
+  private postServer : string = "http://localhost:80";
+  private notificationServer : string = "http://localhost:80";
 
   constructor() { }
 
