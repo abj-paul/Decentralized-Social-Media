@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Post } from '../model/Post';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SharedServiceService } from '../shared-service.service';
+import { BackendServersService } from '../backend-servers.service';
 
 @Component({
   selector: 'app-timeline',
@@ -12,7 +13,7 @@ export class TimelineComponent implements OnInit{
   posts : Post [] = [];
   username : string = "";
 
-  constructor(private http : HttpClient, private shared : SharedServiceService){}
+  constructor(private http : HttpClient, private shared : SharedServiceService, private servers : BackendServersService){}
 
   ngOnInit(): void {
     this.shared.setRoute("timeline");
@@ -21,7 +22,7 @@ export class TimelineComponent implements OnInit{
     const userId = localStorage.getItem("userId");
     console.log(userId);
 
-    this.http.get<any>(`http://localhost:3001/api/v1/user/post?userId=${userId}`, {headers}) //
+    this.http.get<any>(this.servers.getPostServerAddress()+`/api/v1/user/post?userId=${userId}`, {headers}) //
     .subscribe((response)=>{
       console.log(response);
       

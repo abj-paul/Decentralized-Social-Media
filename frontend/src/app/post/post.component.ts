@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { SharedServiceService } from '../shared-service.service';
+import { BackendServersService } from '../backend-servers.service';
 
 @Component({
   selector: 'app-post',
@@ -13,7 +14,7 @@ export class PostComponent implements OnInit{
   imageContent : any = "";
   postStatus : string = "";
 
-  constructor(private http : HttpClient, private shared : SharedServiceService){}
+  constructor(private http : HttpClient, private shared : SharedServiceService, private servers : BackendServersService){}
   ngOnInit(): void {
     this.shared.setRoute("post");
   }
@@ -39,7 +40,7 @@ export class PostComponent implements OnInit{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
 
-    this.http.post<any>("http://localhost:3001/api/v1/user/post", form, {headers})
+    this.http.post<any>(this.servers.getPostServerAddress()+"/api/v1/user/post", form, {headers})
     .subscribe((res)=>{
       this.postStatus = res.message;
       console.log(res);

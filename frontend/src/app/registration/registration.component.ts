@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { SharedServiceService } from '../shared-service.service';
+import { BackendServersService } from '../backend-servers.service';
 
 @Component({
   selector: 'app-registration',
@@ -14,7 +15,7 @@ export class RegistrationComponent implements OnInit{
   description : string = "";
   registrationStatus : string = "";
 
-  constructor(private http : HttpClient, private shared : SharedServiceService){}
+  constructor(private http : HttpClient, private shared : SharedServiceService, private servers : BackendServersService){}
   ngOnInit(): void {
     this.shared.setRoute("registration");
   }
@@ -22,7 +23,7 @@ export class RegistrationComponent implements OnInit{
   registerUser() : void {
     this.registrationStatus = "";
 
-    this.http.post<any>("http://localhost:3000/api/v1/authentication/register", {
+    this.http.post<any>(this.servers.getLoginServerAddress()+"/api/v1/authentication/register", {
       "username" : this.username,
       "password" : this.password,
       "description" : this.description

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedServiceService } from '../shared-service.service';
+import { BackendServersService } from '../backend-servers.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -12,13 +13,13 @@ export class LoginComponent implements OnInit{
   password : string = "";
   loginStatus : string = "";
 
-  constructor(private http : HttpClient, private router : Router, private shared : SharedServiceService){}
+  constructor(private http : HttpClient, private router : Router, private shared : SharedServiceService, private servers : BackendServersService){}
   ngOnInit(): void {
     this.shared.setRoute("login");
   }
 
   authenticate():void{
-    this.http.post<any>("http://localhost:3000/api/v1/authentication/login", {
+    this.http.post<any>(this.servers.getLoginServerAddress()+"/api/v1/authentication/login", {
       "username" : this.username,
       "password" : this.password
     }).subscribe((response)=>{

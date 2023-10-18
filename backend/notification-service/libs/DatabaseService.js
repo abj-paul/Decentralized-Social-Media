@@ -1,10 +1,12 @@
 const mysql = require("mysql2");
 
+const servers = require("../../../servers");
+
 // Global Constants & Variables 
-const DATABASE_HOST = "mysql_notification_server"; 
-const DATABASE_USER = "abhidb";
-const DATABASE_PASSWORD = "admin";
-const DATABASE_NAME = "DeSo";
+const DATABASE_HOST = servers.NOTIFICATION_SERVICE_MYSQL_SERVER;
+const DATABASE_USER = servers.MYSQL_SERVER_USER;
+const DATABASE_PASSWORD = servers.MYSQL_SERVER_PASSWORD;
+const DATABASE_NAME = servers.DATABASE_NAME;
 
 let DB_CONNECTION = null;
 

@@ -1,6 +1,11 @@
 * Create database
 ** Create User
 
+#+begin_src bash
+  CREATE USER 'abhidb'@'localhost' identified by 'admin';
+  GRANT ALL PRIVILEGES ON *.* TO 'abhidb'@'localhost' WITH GRANT OPTION;
+  FLUSH PRIVILEGES;
+#+end_src
 ** Create Database
 #+begin_src bash
   mysql -u abhidb -p

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Notification } from '../model/Notification';
 import { SharedServiceService } from '../shared-service.service';
 import { Router } from '@angular/router';
+import { BackendServersService } from '../backend-servers.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,7 +15,7 @@ export class ProfileComponent implements OnInit{
   userId  = localStorage.getItem("userId");
   username = localStorage.getItem("username");
   notifications : Notification[] = [];
-  constructor(private http : HttpClient, private shared : SharedServiceService, private router : Router){}
+  constructor(private http : HttpClient, private shared : SharedServiceService, private router : Router, private servers : BackendServersService){}
 
   ngOnInit(): void {
     this.shared.setRoute("profile");
@@ -24,7 +25,7 @@ export class ProfileComponent implements OnInit{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
 
-    this.http.get<any>("http://localhost:3002/api/v1/user/notification?userId="+userId, {headers})
+    this.http.get<any>(this.servers.getNotificationServerAddress()+"/api/v1/user/notification?userId="+userId, {headers})
     .subscribe((response)=>{
       console.log(response.notifications);
       this.notifications = response.notifications;
@@ -40,7 +41,7 @@ export class ProfileComponent implements OnInit{
   removeNotification(userId:number, postId:number):void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
 
-    this.http.patch('http://localhost:3002/api/v1/user/notification', {
+    this.http.patch(this.servers.getNotificationServerAddress()+'/api/v1/user/notification', {
       "userId" : userId,
       "postId" : postId
     }, {headers})

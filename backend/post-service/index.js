@@ -9,19 +9,18 @@ const DatabaseService = require("./libs/DatabaseService.js");
 const authorize = require('./libs/authorizationMiddleware.js');
 const FormData = require('form-data');
 const axios = require('axios');
+const servers = require('../../servers');
 
 
 // Constants
-const PORT = 3001;
+const PORT = servers.POST_SERVICE_PORT;
 const minioClient = new Minio.Client({
-  endPoint: 'minio',
-  port: 9000,
+  endPoint: servers.MINIO_SERVER,
+  port: servers.MINIO_PORT,
   useSSL: false,
-  accessKey: 'wBl9YHNf6XXfdMbWu0MS',
-  secretKey: 'fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM',
+  accessKey: servers.MINIO_accessKey,
+  secretKey: servers.MINIO_secretKey,
 });
-
-uploadedImages = []
 
 const app = express();
 
@@ -116,7 +115,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
             await minioClient.fPutObject(bucketName, objectName, filePath, metaData);
             
             // Update imageContent to the Minio object URL
-            const serverUrl = 'http://127.26.0.4:9000';
+            const serverUrl = `http://${servers.MINIO_SERVER}:${servers.MINIO_PORT}`;
             const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
             imageContent = imageUrl;
         }
@@ -128,7 +127,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
         `);
         
         // Fetch the user list
-        const userServiceResponse = await axios.get('http://172.21.0.2:3000/api/v1/user/list', {
+        const userServiceResponse = await axios.get(`${servers.USER_SERVICE_SERVER}:${servers.USER_SERVICE_PORT}/api/v1/user/list`, {
             params: {
                 userId: userId
             }
@@ -148,8 +147,8 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
             };
             
             // Send a notification to each user
-            await axios.post('http://172.24.0.3:3002/api/v1/user/notification', notification);
-	    console.log(`DEBUG: Control reached into axios request on post notification.`);
+            await axios.post(`${servers.NOTIFICATION_SERVICE_SERVER}:${servers.NOTIFICATION_SERVICE_PORT}/api/v1/user/notification`, notification);
+	          console.log(`DEBUG: Control reached into axios request on post notification.`);
         });
         
         // Wait for all notification promises to complete

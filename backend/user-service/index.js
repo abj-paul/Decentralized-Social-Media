@@ -6,10 +6,11 @@ const DatabaseService = require("./libs/DatabaseService.js");
 const authorize = require('./libs/authorizationMiddleware.js');
 const FormData = require('form-data');
 const axios = require('axios');
+const servers = require('../../servers');
 
 
 // Constants
-const PORT = 3000;
+const PORT = servers.USER_SERVICE_PORT ;
 const app = express();
 
 app.use(express.json());
@@ -100,5 +101,5 @@ app.get('/api/v1/user/list', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`User Server running on http://localhost:${PORT}`);
 });
