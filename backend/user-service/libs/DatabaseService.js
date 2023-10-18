@@ -1,5 +1,5 @@
 const mysql = require("mysql2");
-const servers = require("../../../servers");
+const servers = require("../servers");
 
 // Global Constants & Variables 
 const DATABASE_HOST = servers.USER_SERVICE_MYSQL_SERVER;

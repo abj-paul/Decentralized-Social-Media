@@ -7,10 +7,11 @@ const authorize = require('./libs/authorizationMiddleware.js');
 const FormData = require('form-data');
 const axios = require('axios');
 const job = require('./libs/job.js');
+const servers = require("./servers");
 
 
 // Constants
-const PORT = 3002;
+const PORT = servers.NOTIFICATION_SERVICE_PORT;
 const app = express();
 
 // Middleware
@@ -85,5 +86,5 @@ app.patch('/api/v1/user/notification', (req, response) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Notification Server running on ${servers.NOTIFICATION_SERVICE_SERVER}:${PORT}`);
 });

@@ -1,15 +1,15 @@
 version: '3'
 services:
-  mysql_server:
+  mysql_user_server:
     image: mysql:8.0
-    container_name: mysql_server
+    container_name: mysql_user_server
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
       MYSQL_PASSWORD: 'admin'
       MYSQL_ROOT_PASSWORD: 'admin'
     networks:
-      - deso-user-service-network
+      - deso-network
 
   user-service:
     build:
@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile  # Specify the path to your Dockerfile
     container_name: user-service
     networks:
-      - deso-user-service-network
+      - deso-network
     ports:
       - "3000:3000"
     volumes:
@@ -32,7 +32,7 @@ services:
       MYSQL_PASSWORD: 'admin'
       MYSQL_ROOT_PASSWORD: 'admin'
     networks:
-      - deso-post-service-network
+      - deso-network
 
   post-service:
     build:
@@ -40,7 +40,7 @@ services:
       dockerfile: Dockerfile
     container_name: post-service
     networks:
-      - deso-post-service-network
+      - deso-network
     ports:
       - "3001:3001"
     volumes:
@@ -55,10 +55,10 @@ services:
     volumes:
       - /data
     networks:
-      - deso-post-service-network
+      - deso-network
     environment:
-      MINIO_ROOT_USER: wBl9YHNf6XXfdMbWu0MS
-      MINIO_ROOT_PASSWORD: fpmlcbSbmge864KjPCwLn3WJ6PvQzblhqPCs8zaM
+      MINIO_ROOT_USER: YX5NGYgypBTlyrbEblEP
+      MINIO_ROOT_PASSWORD: 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP
     command: ["server", "--console-address", ":9001", "/data"]
 
   mysql_notification_server:
@@ -71,7 +71,7 @@ services:
       MYSQL_ROOT_PASSWORD: 'admin'
     restart: on-failure 
     networks:
-      - deso-notification-service-network
+      - deso-network
 
   notification-service:
     build:
@@ -79,7 +79,7 @@ services:
       dockerfile: Dockerfile  # Specify the path to your Dockerfile
     container_name: notification-service
     networks:
-      - deso-notification-service-network
+      - deso-network
     ports:
       - "3002:3002"
     volumes:
@@ -87,6 +87,4 @@ services:
     restart: on-failure 
 
 networks:
-  deso-user-service-network:
-  deso-post-service-network:
-  deso-notification-service-network:
+  deso-network:

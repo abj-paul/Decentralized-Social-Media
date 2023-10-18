@@ -6,7 +6,7 @@ const DatabaseService = require("./libs/DatabaseService.js");
 const authorize = require('./libs/authorizationMiddleware.js');
 const FormData = require('form-data');
 const axios = require('axios');
-const servers = require('../../servers');
+const servers = require('./servers');
 
 
 // Constants
