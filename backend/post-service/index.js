@@ -115,7 +115,7 @@ app.post('/api/v1/user/post', upload.single('imageContent'), async (req, res) =>
             await minioClient.fPutObject(bucketName, objectName, filePath, metaData);
             
             // Update imageContent to the Minio object URL
-            const serverUrl = `http://${servers.MINIO_SERVER}:${servers.MINIO_PORT}`;
+            const serverUrl = `${servers.PUBLIC_MINIO_SERVER_ADDRESS}:${servers.MINIO_PORT}`;
             const imageUrl = `${serverUrl}/${bucketName}/${objectName}`;
             imageContent = imageUrl;
         }
