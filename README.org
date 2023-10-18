@@ -2,6 +2,11 @@
 The social media has been overtaken by propietary companies, feeding off the contents people create. The amount of improvement societies could see by leveraging this huge quantity of data through research and local initiatives is immense. So in this project, we build a decentralized social media site for the people, of the people. 
 [![Watch the video](https://i.stack.imgur.com/Vp2cE.png)](demo.mkv)
 
+* After Dockering, Installation :
+#+begin_src bash
+  ./servers.sh
+  docker-compose run
+#+end_src
 * Installation 
 
 #+begin_src bash

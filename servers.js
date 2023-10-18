@@ -2,9 +2,9 @@ const USER_SERVICE_PORT = 3000;
 const POST_SERVICE_PORT = 3001;
 const NOTIFICATION_SERVICE_PORT = 3002;
 
-const USER_SERVICE_SERVER = "user-service";
-const POST_SERVICE_SERVER = "post-service";
-const NOTIFICATION_SERVICE_SERVER = "notification_service";
+const USER_SERVICE_SERVER = "http://user-service";
+const POST_SERVICE_SERVER = "http://post-service";
+const NOTIFICATION_SERVICE_SERVER = "http://notification_service";
 
 const USER_SERVICE_MYSQL_SERVER = "mysql_user_server";
 const POST_SERVICE_MYSQL_SERVER = "mysql_post_server";
