@@ -9,7 +9,6 @@ const axios = require('axios');
 const job = require('./libs/job.js');
 const servers = require("./servers");
 
-
 // Constants
 const PORT = servers.NOTIFICATION_SERVICE_PORT;
 const app = express();
@@ -22,7 +21,7 @@ app.use(cors());
 // Job 
 setInterval(function() {
     job.cleanNotification();
-  }, 1000 * 1000); // 10 * 10000 milsec = 10s
+  }, 10 * 1000); // 10 * 10000 milsec = 10s
 
 // API Endpoints
 app.get('/api/v1/', (req,res)=>{

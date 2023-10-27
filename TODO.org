@@ -1,7 +1,12 @@
 - [X] Fix API endpoints
 - [X] Different folder
-- [ ] Different database
-- [ ] Call each other using microservice
-- [ ] Containterize it
-- [ ] Use nginx
-- [ ] Orchestrate them
+- [X] Different database
+- [X] Call each other using microservice
+- [X] Containterize it
+- [X] Use nginx
+- [X] Orchestrate them
+- [ ] create mysql table using yml
+- [ ] authorization
+
+ docker rm -vf $(docker ps -aq)
+

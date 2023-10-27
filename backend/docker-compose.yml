@@ -13,6 +13,9 @@ services:
   mysql_user_server:
     image: mysql:8.0
     container_name: mysql_user_server
+    command: --init-file /data/application/init.sql
+    volumes:
+        - ./user-service/init.sql:/data/application/init.sql
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
@@ -36,6 +39,9 @@ services:
   mysql_post_server:
     image: mysql:8.0
     container_name: mysql_post_server
+    command: --init-file /data/application/init.sql
+    volumes:
+        - ./post-service/init.sql:/data/application/init.sql
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
@@ -71,9 +77,25 @@ services:
       MINIO_ROOT_PASSWORD: 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP
     command: ["server", "--console-address", ":9001", "/data"]
 
+    
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 YX5NGYgypBTlyrbEblEP 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP;
+      /usr/bin/mc mb myminio/posts;
+      /usr/bin/mc policy set public myminio/posts;
+      exit 0;
+      "
+
   mysql_notification_server:
     image: mysql:8.0
     container_name: mysql_notification_server
+    command: --init-file /data/application/init.sql
+    volumes:
+        - ./notification-service/init.sql:/data/application/init.sql
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
