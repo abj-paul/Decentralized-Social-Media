@@ -15,7 +15,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-//app.use('/api/v1/user', authorize);
+app.use('/api/v1/user/list', authorize);
 
 // API Endpoints
 app.get('/api/v1/', (req,res)=>{
@@ -99,6 +99,26 @@ app.get('/api/v1/user/list', (req, res) => {
 	    res.status(200).send({"userList": userList});
 	});
 });
+
+app.post('/api/v1/user/authorize', (req,res)=>{
+	console.log("DEBUG: Reached authorization endpoint!");
+	const token= req.body.token;
+	const secretKey = "mySecretKeyIsYou<3";
+
+	if (token == 'null') {
+		return res.json({ success: false, message: 'No Token Provided' });
+	}
+	jwt.verify(token, secretKey, (err, userInfo) => {
+		if (err) {
+			console.log(err);
+			console.log("NOT AUTHORIZED!!!");
+			return res.status(403).json({ success: false, message: 'Invalid Token' });
+		}
+		else {
+			return res.status(200).json({ success: true, message: 'Valid Token' });			next();
+		}
+	})
+})
 
 app.listen(PORT, () => {
     console.log(`User Server running on http://localhost:${PORT}`);
