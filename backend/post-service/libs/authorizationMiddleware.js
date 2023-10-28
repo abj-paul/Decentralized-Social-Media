@@ -1,32 +1,30 @@
 // authorizationMiddleware.js
 const jwt = require('jsonwebtoken');
-const servers = require("../servers");
-const axios = require("axios");
 
+function authorize(req, res, next) {
+	console.log(req.headers);
 
-function authorize(req, res, next) {    
+	if(req.headers.authorization){
 
-  axios(`${servers.USER_SERVICE_SERVER}:${servers.USER_SERVICE_PORT}/api/v1/user/authorize`,{
-    "token" :  req.headers.authorization
-  })
-  .then((data)=>{
-    if(data){
-      next();
-    }
-  })
+        var token = req.headers.authorization.split(' ')[1];
+        console.log(token);
 
-  console.log("Unable to authorize!");
-  return res.json({ success: false, message: 'Access denied' });
-}
+        const secretKey = "mySecretKeyIsYou<3";
 
-
-
-// Replace this function with your actual authentication logic
-function checkUserAuthentication(req) {
-  // Implement your authentication logic here
-  // For example, check if the user is logged in or has a valid JWT token
-  // You can use req.isAuthenticated() or check the presence of a JWT token in req.headers.authorization
-  return true; // Replace this with the actual authentication check
+        if (token == 'null') {
+            return res.json({ success: false, message: 'No Token Provided' });
+        }
+        jwt.verify(token, secretKey, (err, userInfo) => {
+            if (err) {
+                console.log("NOT AUTHORIZED!!!");
+                return res.status(403).json({ success: false, message: 'Invalid Token' });
+            }
+            else {
+                req.user = userInfo;
+                next();
+            }
+	})
+	}else next();
 }
 
 module.exports = authorize;

@@ -1,27 +1,10 @@
 // authorizationMiddleware.js
 const jwt = require('jsonwebtoken');
 
-/*function authorize(req, res, next) {
-    //next();
-    
-    const token = req.headers['authorization'];
-    const secretKey = "mySecretKeyIsYou<3";
-
-    jwt.verify(token, secretKey, (err, decoded) => {
-	console.log(token);
-	console.log(decoded);
-	if (err) {
-	    return res.status(401).json({ message: 'Failed to authenticate token' });
-	}
-	
-	req.user = decoded;
-	next();
-    });
-}*/
 function authorize(req, res, next) {
-    //next();
-    
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+	console.log(req.headers);
+
+	if(req.headers.authorization){
 
         var token = req.headers.authorization.split(' ')[1];
         console.log(token);
@@ -40,22 +23,8 @@ function authorize(req, res, next) {
                 req.user = userInfo;
                 next();
             }
-        })
-    }
-    else {
-        return res.json({ success: false, message: 'Access denied' });
-    }
-
-}
-
-
-
-// Replace this function with your actual authentication logic
-function checkUserAuthentication(req) {
-  // Implement your authentication logic here
-  // For example, check if the user is logged in or has a valid JWT token
-  // You can use req.isAuthenticated() or check the presence of a JWT token in req.headers.authorization
-  return true; // Replace this with the actual authentication check
+	})
+	}else next();
 }
 
 module.exports = authorize;

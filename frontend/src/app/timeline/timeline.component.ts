@@ -18,18 +18,26 @@ export class TimelineComponent implements OnInit{
   ngOnInit(): void {
     this.shared.setRoute("timeline");
     this.username = this.shared.username;
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
     const userId = localStorage.getItem("userId");
     console.log(userId);
 
-    console.log(`DEBUG: ${JSON.stringify(headers)}`);
-
-    this.http.get<any>(this.servers.getPostServerAddress()+`/api/v1/user/post?userId=${userId}`, {headers}) //
-    .subscribe((response)=>{
-      console.log(response);
-      
-      this.posts = response.posts;
-      console.log(this.posts);
-    });
+    this.http.get<any>(this.servers.getPostServerAddress() + `/api/v1/user/timeline?userId=${userId}`, {
+      headers:   new HttpHeaders({'Authorization': 'Bearer ' + localStorage.getItem("token")})
+    }).subscribe(
+        (response) => {
+          console.log(response);
+          if (response && response.posts) {
+            this.posts = response.posts;
+            console.log(this.posts);
+          } else {
+            console.error("Invalid response format or missing 'posts' property.");
+          }
+        },
+        (error) => {
+          console.error("An error occurred:", error);
+          // Handle error appropriately, e.g., show an error message to the user.
+        }
+      );
+    
   }
 }

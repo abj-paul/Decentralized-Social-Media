@@ -29,18 +29,17 @@ export class PostComponent implements OnInit{
     console.log(this.imageContent);
 
     let userId = localStorage.getItem("userId");
+    let token = localStorage.getItem("token");
     if(!userId) userId = '1';
 
     const form = new FormData();
     form.append("textContent", this.textContent);
     if(this.imageContent)
-      form.append("imageContent", this.imageContent, this.imageContent.name);
+    form.append("imageContent", this.imageContent, this.imageContent.name);
     form.append("userId", userId);
+    form.append("authorization",  <any>token);
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem("token")}`);
-
-
-    this.http.post<any>(this.servers.getPostServerAddress()+"/api/v1/user/post", form, {headers})
+    this.http.post<any>(this.servers.getPostServerAddress()+"/api/v1/user/post", form)
     .subscribe((res)=>{
       this.postStatus = res.message;
       console.log(res);

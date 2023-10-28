@@ -25,7 +25,7 @@ const minioClient = new Minio.Client({
 const app = express();
 
 // Middleware
-app.use('/api/v1/', authorize);
+app.use('/api/v1', authorize);
 app.use(express.json());
 app.use(cors());
 
@@ -75,7 +75,7 @@ app.get('/api/v1/user/post/:postId', (req, response) => {
             response.status(200).send({ "postContent": result });
         });
 });
-app.get('/api/v1/user/post', (req, response) => {
+app.get('/api/v1/user/timeline', (req, response) => {
     const userId = req.query.userId;
     console.log("GETTING TIMELINE CONTENT");
 
