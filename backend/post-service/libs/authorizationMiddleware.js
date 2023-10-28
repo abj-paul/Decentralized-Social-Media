@@ -1,51 +1,22 @@
 // authorizationMiddleware.js
 const jwt = require('jsonwebtoken');
+const servers = require("../servers");
+const axios = require("axios");
 
-/*function authorize(req, res, next) {
-    //next();
-    
-    const token = req.headers['authorization'];
-    const secretKey = "mySecretKeyIsYou<3";
 
-    jwt.verify(token, secretKey, (err, decoded) => {
-	console.log(token);
-	console.log(decoded);
-	if (err) {
-	    return res.status(401).json({ message: 'Failed to authenticate token' });
-	}
-	
-	req.user = decoded;
-	next();
-    });
-}*/
-function authorize(req, res, next) {
-    //next();
-    
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+function authorize(req, res, next) {    
 
-        var token = req.headers.authorization.split(' ')[1];
-        console.log(token);
-
-        const secretKey = "mySecretKeyIsYou<3";
-
-        if (token == 'null') {
-            return res.json({ success: false, message: 'No Token Provided' });
-        }
-        jwt.verify(token, secretKey, (err, userInfo) => {
-            if (err) {
-                console.log("NOT AUTHORIZED!!!");
-                return res.status(403).json({ success: false, message: 'Invalid Token' });
-            }
-            else {
-                req.user = userInfo;
-                next();
-            }
-        })
+  axios(`${servers.USER_SERVICE_SERVER}:${servers.USER_SERVICE_PORT}/api/v1/user/authorize`,{
+    "token" :  req.headers.authorization
+  })
+  .then((data)=>{
+    if(data){
+      next();
     }
-    else {
-        return res.json({ success: false, message: 'Access denied' });
-    }
+  })
 
+  console.log("Unable to authorize!");
+  return res.json({ success: false, message: 'Access denied' });
 }
 
 

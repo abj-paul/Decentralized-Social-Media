@@ -25,8 +25,10 @@ const minioClient = new Minio.Client({
 const app = express();
 
 // Middleware
+app.use('/api/v1/', authorize);
 app.use(express.json());
 app.use(cors());
+
 const upload = multer({ dest: 'uploads/' });
 //app.use('/api/v1/images', authorize);
 //app.use('/api/v1/user', authorize);
