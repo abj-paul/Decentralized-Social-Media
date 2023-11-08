@@ -2,44 +2,132 @@
 The social media has been overtaken by propietary companies, feeding off the contents people create. The amount of improvement societies could see by leveraging this huge quantity of data through research and local initiatives is immense. So in this project, we build a decentralized social media site for the people, of the people. 
 [![Watch the video](https://i.stack.imgur.com/Vp2cE.png)](demo.mkv)
 
-* After Dockering, Installation :
+* Fire up Backend
+The dockers are orchestrated in the docker so simply run the docker-compose. Additionally, we have a server.sh for host-name resolution in code segments. It was used for ease of transfer between no-docker and docker setup. It serves as a useful testing scheme to this day.
 #+begin_src bash
   ./servers.sh
-  docker-compose run
+  docker-compose build
+  docker-compose up
 #+end_src
-* Installation 
 
+* Fire up Frontend
+The frontend should be compiled into a production build first. Then we run the production build using ~lite-server~. The configurations for lite-server can be found in ~bs-config.json~ file.
 #+begin_src bash
-  # Starting the frontend 
-  cd frontend/app/src 
-  npm install 
-  ng serve --open 
-
-  # Start Servers
-  sudo apt install mysql
-  sudo systemctl start mysql
-
-  wget https://dl.minio.io/server/minio/release/linux-amd64/minio
-  chmod +x minio
-  sudo ./minio server /minio
-
-  # Create Tables
-  # Follow guides in Setup.org in backend folder
-
-  # Starting the backend 
-  npm install 
-  npm start 
+ng build --watch
+npm run lite
 #+end_src
 
-* Issues 
-If you encounter any bug, feel free to raise an issue. Pull Requests are welcomed. 
+* Milestones
+We reached a total of 10 milestones to complete the project.
+** Building Monolith
+Currently our application is a monolith. It’s time we convert it to a microservice applitcation.
 
+Let’s recap what modules we have in our backend system so far:
+
+- User management module (Registration, Login)
+- Posts module
+-  Notification module
+
+Currently these modules form a single monolith. We need to segregate them to the following services.
+
+-  User service
+  -  Registration
+  -  Login
+  -  Authentication
+-  Posts service
+-  Notification service
+
+In addition, we also need to develop a sustainable system/environment where we can build/run the microservices easily.
+** Separating into Microservice
+We made three microservices because our structure is separable into those three structures.
+- User Service 
+- Post Service 
+- Notification Service 
+Note that, notification service has an ongoing process ~notification-service~ that deletes seen notifications every 10s.
+** Dockerfile
+** Docker Orchestration
+We run everything in same network.
+** Nginx
+We used the following configuration in nginx.
+#+begin_src text 
+server {
+    listen 80;
+    server_name localhost; # Change to your domain or IP
+
+    location /api/v1/authentication/ {
+        proxy_pass http://user-service:3000; # Point to your desired service by its service name
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+  .....
+
+}
+#+end_src 
+** Automatically create mysql tables
+We have a ~init.sql~ file for it. 
+#+begin_src sql 
+CREATE DATABASE IF NOT EXISTS DeSo;
+USE DeSo;
+CREATE TABLE IF NOT EXISTS posts(
+    postId INT auto_increment primary key,
+    userId INT,
+    textContent varchar(500) NOT NULL,
+    imageContent varchar(100) NOT NULL);
+#+end_src
+Then we added it in the docker-compose.yml 
+#+begin_src yml 
+  mysql_user_server:
+    image: mysql:8.0
+    container_name: mysql_user_server
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./user-service/init.sql:/data/application/init.sql
+.....
+#+end_src 
+** Automatically create minio buckets
+We had to look around a lot to find a script for it since the ~access policy~ has changed recently.
+#+begin_src yml 
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 YX5NGYgypBTlyrbEblEP 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP;
+      /usr/bin/mc rm -r --force myminio/posts;
+      /usr/bin/mc mb myminio/posts;
+      /usr/bin/mc anonymous set public myminio/posts;
+      exit 0;
+      "
+#+end_src 
+** Production build in frontend
+We created a production build becasue development build is not used when deploying it.
+#+begin_src bash 
+ng build --watch
+#+end_src
+** Run frontend in lite server
+We then serve our static production build through lite-server. We had the following configuration in ~bs-config.json~
+
+#+begin_src json 
+{
+  "port": 8080,
+  "files": ["./dist/**/*.{html,htm,css,js}"],
+  "server": { "baseDir": "dist/frontend" },
+  "ui": {
+    "port": 8081
+  }
+}
+#+end_src
+** Script for host name resolution
+As we know, the backend servers need to communicate with each other in a microservice architecture. So when network changes, the server names need to be set manually. Luckily, docker-orchestrator automaitcally performs domain-discovery for us. But when concerning with basic micorservice, it is not always the case. So we have made a simple script that updates the domain names in all places in our code. 
+
+It is still useful with docker-orchestrator when we change the name of a container in the docker-compose.yml 
 * Features 
-- [ ] Authentication & Authorization
-- [ ] Frontend 
-- [ ] Post content 
-- [ ] Post image content 
-- [ ] Load timeline
+- [X] Authentication & Authorization
+- [X] Frontend 
+- [X] Post content 
+- [X] Post image content 
+- [X] Load timeline
 - [ ] Decentralized censorship
 - [ ] Decentralized content filtering 
 - [ ] Decentralized Recommendation
