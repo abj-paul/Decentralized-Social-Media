@@ -44,9 +44,85 @@ We made three microservices because our structure is separable into those three 
 - Post Service 
 - Notification Service 
 Note that, notification service has an ongoing process ~notification-service~ that deletes seen notifications every 10s.
-** Dockerfile
+** Dockerfile & Granular Orchestration 
+We have the usual dockerfile.
+#+begin_src yml 
+FROM node:18
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3001
+
+VOLUME [ "/app/node_modules" ]
+
+CMD [ "npm", "start" ]
+#+end_src
+Additionally, we did granular orchestration for each microservice for ease of debugging. It was necessary becasue, for example, to run post-service, we needed a docker on mysql, minio and post-service itself. And running, managing, stopping three dockers everytime was a tedius activity.
+
+** Build an image.
+#+begin_src bash
+sudo docker build -t deso-post-service:v1 .
+#+end_src
+
+** Create Network.
+#+begin_src bash
+sudo docker network create deso-post-service-network
+#+end_src
+
+** Start MySQL.
+#+begin_src bash
+sudo docker run \
+  --rm \
+  -d \
+  --name mysql_server \
+  -e MYSQL_DATABASE='DeSo' \
+  -e MYSQL_USER='abhidb' \
+  -e MYSQL_PASSWORD='admin' \
+  -e MYSQL_ROOT_PASSWORD='root' \
+  --network deso-user-service-network \
+  mysql:8.0 
+#+end_src
+
+** Start User Service Node Server.
+#+begin_src bash
+sudo docker run \
+  --rm \
+  --name user-service \
+  --network deso-user-service-network \
+  -p 3001:3001 \
+  -v $(pwd):/app \
+  deso-user-service:v1 
+#+end_src
+** Post Service
+First, tables need to be created so make a call at ~localhost:3000/api/v1~ to create the tables. Then you need to login to minio in ~localhost:9000~ using your access key, secret key and create the ~posts~ bucket. Then normally proceed with usual REST interactions.
+
+1. Create POST Table
+2. Create Minio Bucket
+3. Find ip address of user service ~docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' user-service~.
+4. Find ip address of notification service ~docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' notification-service~.
+
 ** Docker Orchestration
-We run everything in same network.
+We run everything in same network. It is our typical code.
+#+begin_src yml 
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx-config:/etc/nginx/conf.d
+    networks:
+      - deso-network
+....
+#+end_src
 ** Nginx
 We used the following configuration in nginx.
 #+begin_src text 
@@ -120,6 +196,20 @@ We then serve our static production build through lite-server. We had the follow
 #+end_src
 ** Script for host name resolution
 As we know, the backend servers need to communicate with each other in a microservice architecture. So when network changes, the server names need to be set manually. Luckily, docker-orchestrator automaitcally performs domain-discovery for us. But when concerning with basic micorservice, it is not always the case. So we have made a simple script that updates the domain names in all places in our code. 
+
+#+begin_src bash 
+rm backend/user-service/servers.js
+rm backend/post-service/servers.js
+rm backend/notification-service/servers.js
+
+echo "Done removing old servers.js"
+
+cp servers.js backend/user-service/
+cp servers.js backend/post-service/
+cp servers.js backend/notification-service/
+
+echo "Done copying new servers.js"
+#+end_src
 
 It is still useful with docker-orchestrator when we change the name of a container in the docker-compose.yml 
 * Features 
