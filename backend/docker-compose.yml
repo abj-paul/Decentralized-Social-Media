@@ -15,7 +15,7 @@ services:
     container_name: mysql_user_server
     command: --init-file /data/application/init.sql
     volumes:
-        - ./user-service/init.sql:/data/application/init.sql
+      - ./user-service/init.sql:/data/application/init.sql
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
@@ -41,7 +41,7 @@ services:
     container_name: mysql_post_server
     command: --init-file /data/application/init.sql
     volumes:
-        - ./post-service/init.sql:/data/application/init.sql
+      - ./post-service/init.sql:/data/application/init.sql
     environment:
       MYSQL_DATABASE: 'DeSo'
       MYSQL_USER: 'abhidb'
@@ -69,26 +69,29 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - /data
+      - ./test/.minio/data:/export
+      - ./test/.minio/config:/root/.minio
+    environment:
+      - "MINIO_ROOT_USER=YX5NGYgypBTlyrbEblEP"
+      - "MINIO_ROOT_PASSWORD=1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP"
     networks:
       - deso-network
-    environment:
-      MINIO_ROOT_USER: YX5NGYgypBTlyrbEblEP
-      MINIO_ROOT_PASSWORD: 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP
     command: ["server", "--console-address", ":9001", "/data"]
 
-    
   createbuckets:
     image: minio/mc
     depends_on:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 YX5NGYgypBTlyrbEblEP 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP;
+      /usr/bin/mc config host add myminio http://minio:9000 YX5NGYgypBTlyrbEblEP 1vgq3N5OvK5pMHUiMUfWAbB491u80DEMKabYxrbP;
+      /usr/bin/mc rm -r --force myminio/posts;
       /usr/bin/mc mb myminio/posts;
-      /usr/bin/mc policy set public myminio/posts;
+      /usr/bin/mc anonymous set public myminio/posts;
       exit 0;
       "
+    networks:
+      - deso-network
 
   mysql_notification_server:
     image: mysql:8.0
@@ -120,3 +123,4 @@ services:
 
 networks:
   deso-network:
+

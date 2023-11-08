@@ -7,7 +7,6 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-COPY ../../servers.js .
 
 EXPOSE 3002
 
